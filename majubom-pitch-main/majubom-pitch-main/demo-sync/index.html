@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>현장과 데이터 · 시연 영상</title>
+<style>
+*{box-sizing:border-box} :root{color-scheme:light;font-family:"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#243c36;background:#f3f2eb}body{margin:0}main{max-width:1800px;margin:auto;padding:clamp(20px,4vw,64px)}header{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:30px}.eyebrow{font-size:12px;letter-spacing:.15em;color:#586c60;margin:0 0 12px}h1{font-size:clamp(26px,3.3vw,48px);font-weight:650;letter-spacing:-.055em;margin:0}header p{margin:10px 0 0;color:#58695f;font-size:15px}.badge{font-size:12px;white-space:nowrap;border:1px solid #b8c6bc;padding:8px 12px;border-radius:30px}.badge:before{content:"";display:inline-block;width:6px;height:6px;background:#48775b;border-radius:50%;margin-right:7px}.screens{display:grid;grid-template-columns:1.1fr 1fr;gap:22px}figure{margin:0;min-width:0}figcaption{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;font-size:15px;font-weight:600}figcaption span{font-size:12px;color:#6f7b72;font-weight:400}.frame{background:#141b19;aspect-ratio:1.6;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:4px}video#source{width:100%;height:100%;object-fit:contain}canvas{width:100%;height:100%;object-fit:contain}#monitor{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.transport{display:flex;align-items:center;gap:18px;border-top:1px solid #ced5cc;padding-top:22px;margin-top:26px}button,select{font:inherit;font-size:14px;border:1px solid #b7c2b9;background:transparent;color:inherit;border-radius:5px;padding:10px 14px;cursor:pointer}button:hover{background:#e4e9df}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #48775b;outline-offset:4px}#play{background:#244e3c;color:#f8faf4;border-color:#244e3c;min-width:96px}#play:hover{background:#35654e}input[type=range]{accent-color:#315e48;flex:1;min-width:50px;cursor:pointer}time{font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}.note{display:flex;justify-content:space-between;gap:20px;color:#69786d;font-size:12px;line-height:1.8;margin-top:20px}#status{color:#335c45}#error{color:#9e3830;padding:12px;background:#fce6e0}button:disabled{opacity:.5;cursor:wait}main:fullscreen{background:#f3f2eb;max-width:none;width:100%;overflow:auto;display:flex;flex-direction:column;justify-content:center}.screens:fullscreen{background:#141b19;padding:30px} @media(max-width:760px){header{align-items:start}.badge{display:none}.screens{grid-template-columns:1fr}.transport{flex-wrap:wrap;gap:12px}input[type=range]{flex-basis:45%}.note{display:block}#fullscreen{margin-left:auto}main{padding:20px}header{margin-bottom:24px}}
+.scene-frame{position:relative;aspect-ratio:16/9;container-type:inline-size;isolation:isolate}
+.screens.has-phone{grid-template-columns:1.1fr 1fr .48fr}
+figure.phone{display:none}.screens.has-phone figure.phone{display:block}
+figure.phone figcaption{flex-direction:column;align-items:flex-start;gap:2px}
+.phone-frame{aspect-ratio:9/16;background:#141b19;border-radius:18px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.phone-frame video{width:100%;height:100%;object-fit:contain;background:#000}
+.embedded .screens.has-phone{grid-template-columns:1.05fr 1fr .42fr}
+.embedded .screens.has-phone figure.phone{display:flex;align-items:center}
+.embedded .phone-frame{flex:1;min-height:0;aspect-ratio:9/16;max-width:100%;margin:0 auto}
+.scene-frame::after{content:"";position:absolute;inset:52% 0 0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(9,16,18,0),rgba(9,16,18,.16) 35%,rgba(9,16,18,.76))}
+.video-caption{position:absolute;z-index:2;inset:auto 6% 6.5%;text-align:center;color:#fafbf7;pointer-events:none}
+.video-caption p{margin:0;font-size:clamp(16px,3.05cqw,30px);font-weight:600;line-height:1.55;letter-spacing:-.035em;word-break:keep-all;white-space:pre-line;text-shadow:0 2px 7px rgba(0,0,0,.7),0 1px 2px rgba(0,0,0,.8)}
+.scene-label{position:absolute;z-index:2;top:6%;left:5%;display:flex;align-items:center;gap:8px;color:#fafbf7;font-size:clamp(10px,1.65cqw,14px);font-weight:500;letter-spacing:.03em;text-shadow:0 1px 5px #15231e}
+.scene-label::before{content:"";width:5px;height:5px;border-radius:50%;background:#d3e4c6}
+@media(max-width:760px){.video-caption{inset:auto 5% 6%}.video-caption p{font-size:clamp(14px,4cqw,22px)}}
+</style>
+<script>if(new URLSearchParams(location.search).has('embed'))document.documentElement.classList.add('embedded');</script>
+<style>
+.embedded{color-scheme:dark;background:#0f1117;color:#f0f1f4}
+.embedded,.embedded body{height:100%;overflow:hidden}
+.embedded main{padding:0;max-width:none;height:100%;display:flex;flex-direction:column}
+.embedded header,.embedded .note{display:none}
+.embedded .screens{grid-template-columns:1fr 1fr;gap:20px;flex:1;min-height:0}
+.embedded figure{display:flex;flex-direction:column;min-height:0}
+.embedded .frame{flex:1;min-height:0;aspect-ratio:auto}
+.embedded figcaption{color:#f0f1f4;font-size:20px;margin-bottom:12px}
+.embedded figcaption span{color:#a0a4b0}
+.embedded .transport{flex-shrink:0;gap:16px;margin-top:16px;padding-top:12px;border-color:#2e3340}
+.embedded button,.embedded select{border-color:#424959;font-size:14px;padding:8px 12px}
+.embedded time{font-size:14px}
+.embedded .video-caption p{font-size:clamp(18px,3.5cqw,24px)}
+.embedded .scene-label{font-size:14px}
+.embedded button:hover{background:#22262f}
+.embedded #play{background:#315cac;border-color:#315cac}
+.embedded input[type=range]{accent-color:#5b8af5}
+.embedded main:fullscreen{padding:30px;background:#0f1117}
+</style>
+<main id="stage">
+<header><div><p class="eyebrow">DEMONSTRATION / 01</p><h1>시연영상</h1><p>움직임과 센서 데이터를 동시에 확인합니다.</p></div><div class="badge">동기화 재생</div></header>
+<div class="screens">
+<figure><figcaption>01 · 현장 영상 <span>원본 전체 화면</span></figcaption><div class="frame scene-frame"><video id="source" src="original.mp4" preload="auto" playsinline poster="original-poster.jpg"></video><span class="scene-label" id="caption-step">누운 상태</span><div class="video-caption" role="status" aria-live="polite" aria-atomic="true"><p id="caption">누워 있는 동안에도,
+센서 데이터는 이어집니다.</p></div></div></figure>
+<figure><figcaption>02 · 모니터 확대 <span>원근·카메라 움직임 보정</span></figcaption><div class="frame"><canvas id="dashboard" width="1000" height="645" aria-label="원본 영상과 동기화된 모니터 확대 화면"></canvas></div></figure>
+<figure class="phone"><figcaption>03 · 간호사 알림 시스템 <span>실제 알림 화면</span></figcaption><div class="phone-frame"><video id="phone" src="phone.mp4" preload="auto" muted playsinline aria-label="간호사 알림 시스템 화면 녹화"></video></div></figure>
+</div>
+<video id="monitor" src="monitor-locked.mp4" preload="auto" muted playsinline aria-hidden="true"></video>
+<div class="transport">
+<button id="play" disabled>준비 중</button><button id="restart" aria-label="처음으로 돌아가기">↺ 처음</button>
+<input id="seek" type="range" min="0" max="32.57" step="0.01" value="0" aria-label="영상 재생 위치">
+<time id="time">00:00 / 00:33</time>
+<select id="view" aria-label="모니터 확대 범위"><option value="wide">넓게 보기</option><option value="screen">모니터 전체</option><option value="dashboard">대시보드 확대</option></select>
+<button id="speed" type="button" aria-label="현재 1.5배속, 누르면 2배속" aria-pressed="true">배속: 1.5×</button>
+<button id="mute" aria-label="소리 끄기">소리 켜짐</button><button id="fullscreen">전체 화면</button>
+</div>
+<div class="note"><span>원근 보정과 약한 선명도 보정을 적용했습니다. 원본에서 식별되지 않는 글자는 복원되지 않습니다.</span><span id="status" role="status">영상을 준비하고 있습니다.</span></div>
+<p id="error" role="alert" hidden></p>
+</main>
+<script>
+/* 폰 녹화 오프셋(초): 폰 영상에서 현장 영상 0초에 해당하는 시각. ?phoneOffset=3.2 로 조정(브라우저에 저장). */
+const phone=document.querySelector('#phone');let phoneOk=false;
+let playbackSpeed=1.5;
+function applySpeed(){for(const v of [source,monitor,phone])v.playbackRate=playbackSpeed}
+const _po=new URLSearchParams(location.search).get('phoneOffset');if(_po!==null)localStorage.setItem('majubom-phone-offset',_po);
+const PHONE_OFFSET_DEFAULT=0; /* phone.mp4는 현장 영상 0초에 맞춰 앞뒤를 잘라 둠 (2026-09-16) */
+const phoneOffset=localStorage.getItem('majubom-phone-offset')!==null?Number(localStorage.getItem('majubom-phone-offset')):PHONE_OFFSET_DEFAULT;
+phone.addEventListener('loadeddata',()=>{phoneOk=true;document.querySelector('.screens').classList.add('has-phone');phone.currentTime=phoneOffset});
+phone.addEventListener('error',()=>{phoneOk=false;document.querySelector('.screens').classList.remove('has-phone')});
+function phoneSyncTime(){if(!phoneOk)return;if(playing&&phone.paused)phone.play().catch(()=>{});const want=source.currentTime+phoneOffset;if(playing&&!phone.seeking){const drift=want-phone.currentTime;if(Math.abs(drift)>.4){phone.currentTime=want;phone.playbackRate=playbackSpeed}else{phone.playbackRate=playbackSpeed*(Math.abs(drift)<.04?1:drift>0?1.03:.97)}}}
+const source=document.querySelector('#source'),monitor=document.querySelector('#monitor'),canvas=document.querySelector('#dashboard'),ctx=canvas.getContext('2d'),play=document.querySelector('#play'),seek=document.querySelector('#seek'),status=document.querySelector('#status'),view=document.querySelector('#view');
+applySpeed();
+const poster=new Image();poster.src='monitor-preview.jpg';poster.onload=()=>{if(monitor.readyState<2)draw(poster)};
+let playing=false,seeking=false,raf=0,readyTimeout=false;
+setTimeout(()=>{readyTimeout=true;ready()},2500);
+const captions=[
+ {start:0,label:'누운 상태',text:'누워 있는 동안에도,\n센서 데이터는 이어집니다.',phone:{level:'normal',posture:'누워있음 감지',note:'취침 중 · 오늘 아침 위험도 위험 환자',morning_risk:'critical',patient:'김순임 어르신 · 78세'}},
+ {start:11,label:'상체 일으키기',text:'몸을 일으키는 움직임,\n오른쪽 데이터도 함께 변합니다.',phone:{level:'warning',posture:'앉음',note:'일어나려는 움직임 · 전조 시작'}},
+ {start:16,label:'침대 가장자리',text:'침대 가장자리에 앉는 순간까지,\n움직임을 연속해서 관찰합니다.',phone:{level:'critical',posture:'걸터앉음',note:'이탈 전조 감지 · 나오기 전 알림'}},
+ {start:22,label:'침대 이탈',text:'침대를 벗어나 걷기 시작하면,\n이동 모습과 데이터를 함께 봅니다.',phone:{level:'critical',posture:'침대 이탈',note:'침대 이탈 확인 · 간호사 이동 중'}},
+ {start:27,label:'연속 관찰',text:'누워 있을 때부터 이동할 때까지,\n하나의 흐름으로 확인합니다.',phone:null}
+];
+/* ── 간호사 폰 동기화: 장면이 바뀔 때 MajuBom ToF 서버 /demo/alert 로 전송. 폰 앱이 0.5초마다 읽는다.
+   서버 주소는 ?phone=http://IP:5001 또는 localStorage('majubom-phone-server'). 없으면 전송 안 함. */
+let phoneParam=new URLSearchParams(location.search).get('phone');
+try{if(!phoneParam&&window.parent!==window)phoneParam=new URLSearchParams(parent.location.search).get('phone')}catch{}
+if(phoneParam===''){localStorage.removeItem('majubom-phone-server')}else if(phoneParam){localStorage.setItem('majubom-phone-server',phoneParam)}
+const phoneServer=phoneParam||localStorage.getItem('majubom-phone-server')||'';
+let phoneSent=null;
+function phoneSync(state){
+ if(!phoneServer)return;
+ const key=JSON.stringify(state);if(key===phoneSent)return;phoneSent=key;
+ fetch(phoneServer.replace(/\/$/,'')+'/demo/alert',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state||{level:'clear'})}).catch(()=>{});
+}
+let captionIndex=-1;
+function updateCaption(t){let index=0;for(let i=1;i<captions.length;i++){if(t>=captions[i].start)index=i}if(index===captionIndex)return;captionIndex=index;if(captions[index].phone)phoneSync(captions[index].phone);document.querySelector('#caption-step').textContent=captions[index].label;const caption=document.querySelector('#caption');caption.textContent=captions[index].text;if(!matchMedia('(prefers-reduced-motion: reduce)').matches){caption.getAnimations().forEach(a=>a.cancel());caption.animate([{opacity:0},{opacity:1}],{duration:220,easing:'ease-out'})}}
+function draw(frame=monitor){if(frame===monitor&&monitor.readyState<2)return;ctx.fillStyle='#141b19';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.filter='contrast(1.05) saturate(0.95)';const crop=view.value==='dashboard'?[205,157,855,551]:view.value==='wide'?[115,85,1035,635]:[0,0,1280,720];const scale=Math.min(canvas.width/crop[2],canvas.height/crop[3]),w=crop[2]*scale,h=crop[3]*scale;ctx.drawImage(frame,...crop,(canvas.width-w)/2,(canvas.height-h)/2,w,h);ctx.filter='none'}
+function stamp(t){return `${Math.floor(t/60).toString().padStart(2,'0')}:${Math.floor(t%60).toString().padStart(2,'0')}`}
+function update(){if(source.playbackRate!==playbackSpeed)source.playbackRate=playbackSpeed;if(!seeking)seek.value=source.currentTime;document.querySelector('#time').textContent=`${stamp(source.currentTime)} / ${stamp(source.duration||32.57)}`;updateCaption(source.currentTime);draw();if(playing&&!monitor.seeking){const drift=source.currentTime-monitor.currentTime;if(Math.abs(drift)>.4){monitor.currentTime=source.currentTime;monitor.playbackRate=playbackSpeed}else{monitor.playbackRate=playbackSpeed*(Math.abs(drift)<.04?1:drift>0?1.03:.97)}}phoneSyncTime();raf=requestAnimationFrame(update)}
+function ready(){if((source.readyState>=1&&monitor.readyState>=1)||readyTimeout){play.disabled=false;play.textContent=playing?'Ⅱ 일시정지':'▶ 재생';status.textContent=playing?'동기화 재생 중':'현장 영상과 모니터가 함께 재생됩니다.';seek.max=Math.min(source.duration||32.57,monitor.duration||32.57);draw()}}
+let starting=false;
+async function start(){if(starting)return;starting=true;try{for(const v of [source,monitor,phone])if(v.networkState===0)v.load(); /* 아직 요청조차 안 한 경우만 */if(source.ended||source.currentTime>=Number(seek.max)-.05){source.currentTime=0;monitor.currentTime=0}monitor.currentTime=source.currentTime;if(phoneOk){phone.currentTime=source.currentTime+phoneOffset}applySpeed();playing=true;await Promise.all([source.play(),monitor.play(),phoneOk?phone.play():Promise.resolve()]);play.textContent='Ⅱ 일시정지';status.textContent='동기화 재생 중'}catch(e){if(e&&e.name==='AbortError'){/* 다른 조작으로 취소됨 — 오류 아님 */}else{pause();showError('재생을 시작하지 못했습니다. 재생 버튼을 다시 눌러주세요. ('+(e&&e.name||e)+')')}}finally{starting=false}}
+function pause(){playing=false;source.pause();monitor.pause();if(phoneOk)phone.pause();play.textContent='▶ 재생';status.textContent='일시정지'}
+function jump(t){source.currentTime=t;monitor.currentTime=t;if(phoneOk)phone.currentTime=t+phoneOffset;if(t===0){captionIndex=-1;phoneSent=null}updateCaption(t);draw()}
+function showError(text){const e=document.querySelector('#error');e.hidden=false;e.textContent=text}
+play.onclick=()=>playing?pause():start();document.querySelector('#restart').onclick=()=>jump(0);
+document.querySelector('#speed').onclick=()=>{const order=[1,1.5,2];playbackSpeed=order[(order.indexOf(playbackSpeed)+1)%order.length];applySpeed();const b=document.querySelector('#speed');const nx=order[(order.indexOf(playbackSpeed)+1)%order.length];b.textContent='배속: '+playbackSpeed+'×';b.setAttribute('aria-pressed',String(playbackSpeed!==1));b.setAttribute('aria-label','현재 '+playbackSpeed+'배속, 누르면 '+nx+'배속')};
+seek.addEventListener('input',()=>{seeking=true;jump(Number(seek.value))});seek.addEventListener('change',()=>{seeking=false});
+source.addEventListener('ended',()=>{pause();status.textContent='시연이 끝났습니다. 처음부터 다시 재생할 수 있습니다.'});
+for(const v of [source,monitor]){v.addEventListener('loadeddata',ready);v.addEventListener('canplay',ready);v.addEventListener('error',()=>showError('영상 파일을 불러오지 못했습니다. HTML과 original.mp4, monitor.mp4가 같은 폴더에 있는지 확인하세요.'))}
+monitor.addEventListener('seeked',()=>draw());view.onchange=()=>draw();
+document.querySelector('#mute').onclick=()=>{source.muted=!source.muted;const b=document.querySelector('#mute');b.textContent=source.muted?'소리 꺼짐':'소리 켜짐';b.setAttribute('aria-label',source.muted?'소리 켜기':'소리 끄기')};
+document.querySelector('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.querySelector('#stage').requestFullscreen()}catch{status.textContent='이 브라우저에서는 전체 화면을 지원하지 않습니다.'}};
+document.addEventListener('fullscreenchange',()=>document.querySelector('#fullscreen').textContent=document.fullscreenElement?'전체 화면 종료':'전체 화면');
+const embedded=document.documentElement.classList.contains('embedded');
+if(embedded){source.muted=true;document.querySelector('#mute').textContent='소리 꺼짐';document.querySelector('#mute').setAttribute('aria-label','소리 켜기')}
+window.addEventListener('message',e=>{
+ if(!embedded||e.source!==parent||e.origin!==location.origin||e.data.type!=='majubom-demo')return;
+ if(e.data.command==='pause')pause();
+ if(e.data.command==='reset'){pause();jump(0)}
+ if(e.data.command==='toggle'&&!play.disabled)playing?pause():start();
+});
+document.addEventListener('keydown',e=>{
+ const editing=['INPUT','SELECT'].includes(document.activeElement.tagName);
+ if(embedded&&!editing&&['Enter','ArrowRight','ArrowLeft','PageDown','PageUp','Home','End','f','F','t','T','h','H'].includes(e.key)){
+  e.preventDefault();parent.postMessage({type:'majubom-deck-key',key:e.key},location.origin);return;
+ }
+ if(e.code==='Space'&&!['BUTTON','INPUT','SELECT'].includes(document.activeElement.tagName)){e.preventDefault();if(!play.disabled)playing?pause():start()}
+});update();
+</script>
+</html>

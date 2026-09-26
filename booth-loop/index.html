@@ -108,9 +108,21 @@ body.idle{cursor:none}
 .notify-tag.none{background:var(--surface);color:var(--text-3)}
 
 /* ── 시연 영상 (무대 전체) ── */
-.slide.video-slide{padding:0;background:#000}
-.video-slide video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
-.video-tag{position:absolute;top:22px;left:26px;display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:100px;font-size:14px;font-weight:800;background:rgba(15,17,23,.72);color:var(--ok);border:1px solid rgba(52,211,153,.35)}
+.slide.video-slide{padding:24px 40px calc(var(--cap-h) + 4px)}
+.demo-head{width:100%;display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.demo-head h2{font-size:24px;font-weight:900;letter-spacing:-.02em}
+/* 세 화면 높이를 맞추려고 열 비율 = 각 화면의 가로세로비 (16:9 · 1000:645 · 9:16) */
+.demo-grid{width:100%;display:grid;grid-template-columns:1.778fr 1.55fr .5625fr;gap:14px;align-items:end}
+.demo-fig figcaption{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;font-size:15px;font-weight:800;color:var(--text-1);white-space:nowrap}
+.demo-fig figcaption span{font-size:12px;font-weight:600;color:var(--text-3)}
+.demo-frame{position:relative;background:#000;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.demo-frame video,.demo-frame canvas{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+.demo-frame.scene{aspect-ratio:16/9}
+.demo-frame.monitor{aspect-ratio:1000/645}
+.demo-frame.phone{aspect-ratio:9/16;border-radius:18px}
+.scene-label{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:100px;font-size:13px;font-weight:800;background:rgba(15,17,23,.78);color:var(--text-1);border:1px solid var(--border)}
+.scene-label::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.video-tag{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:100px;font-size:14px;font-weight:800;background:rgba(15,17,23,.72);color:var(--ok);border:1px solid rgba(52,211,153,.35)}
 .video-tag::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok);animation:blink 1.4s ease-in-out infinite}
 @keyframes blink{50%{opacity:.25}}
 
@@ -346,10 +358,18 @@ body.is-paused #paused{display:block}
   </div>
 </div>
 
-<!-- 6 · 시연 영상 (무대 전체) -->
+<!-- 6 · 시연 영상 — 현장 · 모니터 확대 · 간호사 폰 3화면 동기화 -->
 <div class="slide video-slide" data-caps="video">
-  <video id="demoVideo" muted playsinline preload="auto" src="assets/scenario.mp4"></video>
-  <div class="video-tag">실제 동작 화면 · 실측 데모</div>
+  <div class="demo-head"><div class="video-tag">실제 동작 화면 · 동기화 재생</div><h2>움직임과 센서 데이터, 알림까지 한 번에</h2></div>
+  <div class="demo-grid">
+    <figure class="demo-fig"><figcaption>01 · 현장 영상 <span>실제 상황</span></figcaption>
+      <div class="demo-frame scene"><video id="demoVideo" muted playsinline preload="auto" src="assets/demo/original.mp4" poster="assets/demo/original-poster.jpg"></video><span class="scene-label" id="sceneLabel">누운 상태</span></div></figure>
+    <figure class="demo-fig"><figcaption>02 · 모니터 확대 <span>대시보드 · 원근 보정</span></figcaption>
+      <div class="demo-frame monitor"><canvas id="demoCanvas" width="1000" height="645"></canvas></div></figure>
+    <figure class="demo-fig"><figcaption>03 · 간호사 알림 <span>실제 폰 화면</span></figcaption>
+      <div class="demo-frame phone"><video id="demoPhone" muted playsinline preload="auto" src="assets/demo/phone.mp4"></video></div></figure>
+  </div>
+  <video id="demoMonitor" muted playsinline preload="auto" src="assets/demo/monitor-locked.mp4" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
 </div>
 
 <div class="brand" id="brand"><b>마주봄</b>AI 비접촉 센서융합 낙상 예측</div>
@@ -427,10 +447,11 @@ body.is-paused #paused{display:block}
       {t:'지금부터 실제 센서가 동작하는 화면을 보여드립니다.'}
     ],
     video:[
-      {at:0, t:'누워 계시다 뒤척이는 모습 — <b>ToF</b>가 자세 변화를 그대로 인식합니다.'},
-      {at:8, t:'침대에 걸터앉으면, ToF가 자세를 <b>\'걸터앉음\'</b>으로 판별합니다.'},
-      {at:16,t:'침대를 벗어나는 순간, <b>침상 이탈</b>을 감지합니다.'},
-      {at:24,t:'걸어 다녀도 <b>mmWave 포인트클라우드</b>가 위치를 실시간으로 추적합니다.'}
+      {at:0, lb:'누운 상태',     t:'누워 계신 동안에도, <b>ToF</b>와 <b>mmWave</b> 데이터는 끊김 없이 이어집니다.'},
+      {at:11,lb:'상체 일으키기', t:'몸을 일으키면, 가운데 대시보드의 <b>자세 데이터도 함께</b> 바뀝니다.'},
+      {at:16,lb:'침대 가장자리', t:'침대 가장자리에 걸터앉는 순간 — 간호사 폰에 <b>이탈 전조 알림</b>이 갑니다.'},
+      {at:22,lb:'침대 이탈',     t:'침대를 벗어나 걸으면, <b>mmWave</b>가 이동 위치를 실시간으로 추적합니다.'},
+      {at:27,lb:'연속 관찰',     t:'누워 있을 때부터 이동할 때까지, <b>하나의 흐름</b>으로 확인합니다.'}
     ]
   };
   function capDur(c){
@@ -443,7 +464,32 @@ body.is-paused #paused{display:block}
   var slides=[].slice.call(stage.querySelectorAll('.slide'));
   var capEl=document.getElementById('cap'), prog=document.getElementById('progress');
   var brand=document.getElementById('brand'), dotsEl=document.getElementById('dots');
-  var vid=document.getElementById('demoVideo');
+  var vid=document.getElementById('demoVideo');           // 현장 영상 = 기준 시계
+  var mon=document.getElementById('demoMonitor'), phone=document.getElementById('demoPhone');
+  var canvas=document.getElementById('demoCanvas'), ctx=canvas.getContext('2d');
+  var sceneLabel=document.getElementById('sceneLabel');
+  var DEMO=[vid,mon,phone];
+
+  /* 모니터 보정 영상에서 대시보드 부분만 잘라 캔버스에 (demo-sync '넓게 보기'와 같은 영역, 1280×720 기준) */
+  function drawMonitor(frame){
+    var fw=frame.videoWidth||frame.naturalWidth||1280, k=fw/1280;
+    var c=[115*k,85*k,1035*k,635*k];
+    var sc=Math.min(canvas.width/c[2],canvas.height/c[3]), w=c[2]*sc, h=c[3]*sc;
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(frame,c[0],c[1],c[2],c[3],(canvas.width-w)/2,(canvas.height-h)/2,w,h);
+  }
+  var poster=new Image(); poster.onload=function(){ if(mon.readyState<2) drawMonitor(poster); }; poster.src='assets/demo/monitor-preview.jpg';
+  function demoPlay(){ DEMO.forEach(function(v){ v.playbackRate=1; v.play().catch(function(){}); }); }
+  function demoPause(){ DEMO.forEach(function(v){ v.pause(); }); }
+  function demoSeek(t){ DEMO.forEach(function(v){ try{ v.currentTime=t; }catch(e){} }); }
+  /* 모니터·폰을 현장 영상 시각에 맞춰 살짝 빠르게/느리게 — 크게 어긋나면 바로 점프 */
+  function follow(v){
+    if(v.seeking||v.readyState<2) return;
+    var drift=vid.currentTime-v.currentTime;
+    if(Math.abs(drift)>.4){ v.currentTime=vid.currentTime; v.playbackRate=1; }
+    else v.playbackRate=Math.abs(drift)<.04?1:(drift>0?1.03:.97);
+    if(v.paused&&!vid.paused) v.play().catch(function(){});
+  }
   var cur=-1, capIdx=-1, slideStart=0, slideDur=0, pausedAt=0, paused=false;
   var capTimer=null;
 
@@ -476,6 +522,7 @@ body.is-paused #paused{display:block}
     var list=capsOf(cur); capIdx=i;
     setCaption(list[i]?list[i].t:'');
     setFocus(slides[cur],list[i]&&list[i].hl);
+    if(list[i]&&list[i].lb) sceneLabel.textContent=list[i].lb;
   }
 
   function goSlide(n){
@@ -487,15 +534,14 @@ body.is-paused #paused{display:block}
       else if(i<n) s.classList.add('prev');
     });
     dots.forEach(function(d,i){ d.classList.toggle('on',i===n); });
-    brand.classList.toggle('hide',isVideo(n));
     slideStart=performance.now();
     if(isVideo(n)){
       slideDur=(vid.duration&&isFinite(vid.duration))?vid.duration:33;
-      try{ vid.currentTime=0; }catch(e){}
-      if(!paused) vid.play().catch(function(){});
+      demoSeek(0);
+      if(!paused) demoPlay();
       capIdx=-1;
     } else {
-      vid.pause();
+      demoPause();
       var list=capsOf(n);
       slideDur=list.reduce(function(a,c){ return a+capDur(c); },0)+0.6;
       showCap(0);
@@ -509,6 +555,8 @@ body.is-paused #paused{display:block}
       var t;
       if(isVideo(cur)){
         t=vid.currentTime||0;
+        if(mon.readyState>=2) drawMonitor(mon);
+        if(!paused){ follow(mon); follow(phone); }
         var d=(vid.duration&&isFinite(vid.duration))?vid.duration:slideDur;
         var list=capsOf(cur), k=0;
         for(var i=0;i<list.length;i++) if(t>=list[i].at) k=i;
@@ -534,8 +582,8 @@ body.is-paused #paused{display:block}
   function togglePause(){
     paused=!paused;
     document.body.classList.toggle('is-paused',paused);
-    if(paused){ pausedAt=performance.now(); vid.pause(); }
-    else { slideStart+=performance.now()-pausedAt; if(isVideo(cur)) vid.play().catch(function(){}); }
+    if(paused){ pausedAt=performance.now(); demoPause(); }
+    else { slideStart+=performance.now()-pausedAt; if(isVideo(cur)) demoPlay(); }
   }
   function toggleFS(){
     if(document.fullscreenElement) document.exitFullscreen();
