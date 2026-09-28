@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마주봄 기술 검증 자료</title>
+<style>
+@font-face{font-family:'Pretendard Variable';font-weight:45 920;font-style:normal;font-display:swap;src:url('assets/PretendardVariable.woff2') format('woff2-variations')}
+/* 색 규칙: 파랑 = 배포 · 보라 = 연구 단계(미배포) · 빨강 = 한계 · 초록/노랑/주황/빨강 = 위험도 단계 */
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface-2:#22262f;--border:#2e3340;
+  --text-1:#f0f1f4;--text-2:#a0a4b0;--text-3:#6b7080;
+  --accent:#5b8af5;--accent-soft:rgba(91,138,245,.12);--accent-line:rgba(91,138,245,.45);
+  --research:#a78bfa;--research-soft:rgba(167,139,250,.12);--research-line:rgba(167,139,250,.45);
+  --ok:#34d399;--warn:#fbbf24;--orange:#fb923c;--danger:#fb7185;--danger-soft:rgba(251,113,133,.1);--danger-line:rgba(251,113,133,.4);
+  --mono:ui-monospace,'Cascadia Code',Consolas,monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Pretendard Variable','Pretendard',-apple-system,system-ui,'Malgun Gothic',sans-serif;color:var(--text-1);-webkit-font-smoothing:antialiased;word-break:keep-all}
+
+#stage{position:absolute;left:50%;top:50%;width:1440px;height:810px;transform-origin:50% 50%;overflow:hidden;background:var(--bg)}
+.slide{position:absolute;inset:0;padding:44px 64px 56px;display:none;flex-direction:column}
+.slide.active{display:flex}
+.kicker{font-size:14px;font-weight:800;color:var(--accent);letter-spacing:.04em;margin-bottom:8px}
+.kicker.research{color:var(--research)}
+h2{font-size:36px;font-weight:900;letter-spacing:-.02em;line-height:1.2;margin-bottom:22px}
+h2 small{font-size:18px;font-weight:700;color:var(--text-3);margin-left:12px;letter-spacing:0}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;gap:16px}
+.src{position:absolute;left:64px;bottom:20px;font-size:12.5px;color:var(--text-3);font-family:var(--mono)}
+.pg{position:absolute;right:64px;bottom:20px;font-size:13px;color:var(--text-3);font-family:var(--mono)}
+
+.cols{display:grid;gap:18px}
+.c2{grid-template-columns:1fr 1fr}
+.c3{grid-template-columns:repeat(3,1fr)}
+.c64{grid-template-columns:1.5fr 1fr}
+.card{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px 22px}
+.card h3{font-size:18px;font-weight:900;margin-bottom:10px}
+.card h3 .tag{margin-left:8px}
+.card.lim{background:var(--danger-soft);border-color:var(--danger-line)}
+.card.lim h3{color:var(--danger)}
+.card.rs{background:var(--research-soft);border-color:var(--research-line)}
+.card.key{background:var(--accent-soft);border-color:var(--accent-line)}
+.card p,.card li{font-size:15.5px;line-height:1.55;color:var(--text-2)}
+.card ul{list-style:none;display:grid;gap:6px}
+.card li::before{content:'·';color:var(--accent);font-weight:900;margin-right:8px}
+.card.lim li::before{color:var(--danger)}
+.card li b,.card p b{color:var(--text-1)}
+.tag{display:inline-block;font-size:12px;font-weight:800;padding:2px 9px;border-radius:100px;vertical-align:2px}
+.tag.dep{background:var(--accent-soft);color:var(--accent)}
+.tag.rs{background:var(--research-soft);color:var(--research)}
+.tag.no{background:var(--danger-soft);color:var(--danger)}
+
+table{width:100%;border-collapse:collapse;font-size:15px;align-self:start}
+th{font-size:13px;font-weight:800;color:var(--text-3);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid rgba(46,51,64,.6);color:var(--text-2);line-height:1.4;vertical-align:top}
+td b{color:var(--text-1)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hi td{background:var(--accent-soft)}
+tr.bad td{background:var(--danger-soft)}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:.92em;color:var(--text-1);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+pre{font-family:var(--mono);font-size:13px;line-height:1.5;color:var(--text-2);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;white-space:pre-wrap}
+
+/* 흐름도 */
+.pipe{display:flex;align-items:stretch;gap:8px}
+.pipe .st{flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.pipe .st b{display:block;font-size:15.5px;font-weight:900;margin-bottom:5px}
+.pipe .st span{display:block;font-size:13.5px;color:var(--text-2);line-height:1.45}
+.pipe .ar{align-self:center;color:var(--text-3);font-size:18px}
+.pipe .st.ext{border-style:dashed;border-color:var(--warn)}
+.pipe .st.ext b{color:var(--warn)}
+.lane-lbl{font-size:13px;font-weight:800;color:var(--text-3);margin:4px 0 6px}
+
+.formula{font-variant-numeric:tabular-nums;font-size:20px;font-weight:700;color:var(--text-1);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.big{font-size:44px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+.big small{font-size:16px;font-weight:700;color:var(--text-2);margin-left:6px;letter-spacing:0}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
+.stat .l{font-size:13px;font-weight:800;color:var(--text-3);margin-bottom:6px}
+.stat .v{font-size:30px;font-weight:900}
+.stat .d{font-size:13px;color:var(--text-2);margin-top:4px;line-height:1.4}
+.stat.lim .v{color:var(--danger)}
+
+/* 표지 */
+.cover{justify-content:center}
+.cover h1{font-size:60px;font-weight:900;letter-spacing:-.03em;line-height:1.2;margin-bottom:18px}
+.cover .sub{font-size:24px;font-weight:700;color:var(--text-2);margin-bottom:34px}
+.cover .note{display:inline-flex;gap:10px;flex-wrap:wrap}
+.cover .note span{font-size:17px;font-weight:800;padding:8px 18px;border-radius:100px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2)}
+.cover .note span.w{color:var(--danger);background:var(--danger-soft);border-color:var(--danger-line)}
+
+#nav{position:fixed;right:16px;top:14px;z-index:30;display:flex;gap:6px}
+#nav button{font:inherit;font-size:13px;font-weight:800;color:var(--text-2);background:rgba(26,29,39,.85);border:1px solid var(--border);border-radius:8px;padding:5px 11px;cursor:pointer}
+#nav button:hover{color:var(--text-1);border-color:var(--accent-line)}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 · 표지 -->
+<section class="slide cover">
+  <div class="kicker">MAJUBOM · TECHNICAL Q&amp;A</div>
+  <h1>마주봄 기술 검증 자료</h1>
+  <p class="sub">알고리즘 · 원시 데이터 · 정제 과정 · 검증 결과 · 표본 한계</p>
+  <div class="note"><span>모든 수치는 프로젝트 저장소 실측 기록 기준</span><span class="w">임상 낙상 라벨 0건 — 성능은 모두 대리 과제 기준</span></div>
+  <div class="src">github.com/b-hyoung/Majubom · 2026-09 기준</div>
+</section>
+
+<!-- 2 · 한눈에 보기 -->
+<section class="slide">
+  <div class="kicker">01 · 개요</div>
+  <h2>구성 요소별 알고리즘 · 데이터 · 결과</h2>
+  <div class="body">
+    <table>
+      <tr><th>구성 요소</th><th>알고리즘</th><th>학습·평가 데이터</th><th>결과</th><th>상태</th></tr>
+      <tr><td><b>ToF 자세 분류</b></td><td>Random Forest · 200 trees · 128차원</td><td>1인 · 1일 · 18세션 · 6,806프레임</td><td>시간분할 정확도 <b>97.9%</b> · macro-F1 0.981</td><td><span class="tag dep">배포</span></td></tr>
+      <tr><td><b>ToF 재실 · 쏠림</b></td><td>빈 침대 기준 거리차 · 히스테리시스 · 중심 편위 규칙</td><td>라벨 평가 없음</td><td>규칙 동작 확인 · 정량 성능 없음</td><td><span class="tag dep">배포</span></td></tr>
+      <tr><td><b>mmWave 보행 평가</b></td><td>보행 지표 6종 · 개인 Z-score · S = Σ|Z|</td><td>보행 윈도우 75건 (기준선)</td><td>연출 1회 검증 · 임상 민감도 측정 불가</td><td><span class="tag dep">배포</span></td></tr>
+      <tr><td><b>낙상 순간 판정</b></td><td>높이 급강하 &gt; 1.2 m / 윈도우 규칙</td><td>실제 낙상 데이터 없음</td><td>미검증</td><td><span class="tag dep">배포</span></td></tr>
+      <tr><td><b>위험도 통합</b></td><td>성분별 단계 중 최댓값</td><td>—</td><td>근거: 융합 비교에서 단일 센서 대비 이득 없음</td><td><span class="tag dep">배포</span></td></tr>
+      <tr><td><b>AI 리포트 검색</b></td><td>Vector + BM25 · RRF (k=60)</td><td>논문 73편 · 631 chunk · 질의 18개</td><td>Recall@5 1.0 · MRR@5 1.0</td><td><span class="tag dep">배포</span></td></tr>
+      <tr><td><b>이탈 예측</b></td><td>LSTM · GRU (점군 시퀀스)</td><td>1인 · 569시퀀스 · 이탈 17건</td><td>LSTM F1 42 · recall 36%</td><td><span class="tag rs">연구</span></td></tr>
+      <tr><td><b>센서 융합</b></td><td>조기 결합 · 지연 결합 로지스틱 회귀</td><td>약라벨 187건 · 시험 15건</td><td>ToF 단독 F1 0.667 &gt; 융합</td><td><span class="tag rs">연구</span></td></tr>
+    </table>
+    <div class="card lim"><h3>먼저 밝혀 둘 점</h3><ul>
+      <li><b>대상자는 1명</b>이고 자세 데이터는 <b>하루</b>에 수집했습니다. 다른 사람에 대한 일반화 성능은 측정하지 못했습니다.</li>
+      <li><b>실제 낙상·이탈 정답 라벨은 0건</b>입니다. 운영 DB의 낙상 이벤트는 시뮬레이션입니다.</li>
+    </ul></div>
+  </div>
+  <div class="src">research/alternatives/artifacts/evaluation.json · project_audit.json</div>
+</section>
+
+<!-- 3 · 아키텍처 -->
+<section class="slide">
+  <div class="kicker">01 · 개요</div>
+  <h2>시스템 아키텍처와 데이터 흐름</h2>
+  <div class="body">
+    <div class="lane-lbl">침대 위 · ToF</div>
+    <div class="pipe">
+      <div class="st"><b>VL53L5CX ×2</b><span>머리맡 · 발치<br>8×8 멀티존 · 설정 15 Hz</span></div><span class="ar">→</span>
+      <div class="st"><b>ESP32-S3</b><span>센서별 독립 I2C 버스<br>JSON 직렬화</span></div><span class="ar">→</span>
+      <div class="st"><b>WiFi HTTP POST</b><span>2.4 GHz · /tof<br>실효 0.9–7 Hz / 센서</span></div><span class="ar">→</span>
+      <div class="st"><b>tof_server.py :5001</b><span>재실 · RF 자세 · 쏠림 규칙<br>Raspberry Pi 5</span></div>
+    </div>
+    <div class="lane-lbl">침대 밖 · mmWave</div>
+    <div class="pipe">
+      <div class="st"><b>TI IWR6843AOP</b><span>60–64 GHz FMCW<br>3 m 높이 · 하향 15°</span></div><span class="ar">→</span>
+      <div class="st"><b>USB UART</b><span>CP2105 · 921,600 baud<br>TLV 1010 track · 1020 점군</span></div><span class="ar">→</span>
+      <div class="st"><b>send_mmw.py</b><span>TLV 파싱 · 환자 특정<br>6초 윈도우 보행 지표</span></div><span class="ar">→</span>
+      <div class="st"><b>mmw_server.py :5002</b><span>기준선 · Z-score · 단계<br>Raspberry Pi 5</span></div>
+    </div>
+    <div class="lane-lbl">저장 · 표시 · 리포트</div>
+    <div class="pipe">
+      <div class="st"><b>SQLite majubom.db</b><span>원시값 · 판정 · 활동 로그<br>기준선은 JSON (sum · sumsq)</span></div><span class="ar">→</span>
+      <div class="st"><b>간호사 대시보드</b><span>브라우저가 /latest 폴링<br>평면도 · 자세 · 위험 단계</span></div><span class="ar">→</span>
+      <div class="st ext"><b>외부 API 구간</b><span>OpenAI 임베딩 · LLM<br>AI 리포트 생성 시에만 전송</span></div>
+    </div>
+    <div class="card"><p>판정(자세 · 보행 · 위험 단계)은 <b>모두 병실 안 Pi에서</b> 처리합니다. 외부로 나가는 데이터는 AI 리포트 생성 요청뿐입니다. 임베딩 대상 텍스트에서는 환자 이름을 제외합니다.</p></div>
+  </div>
+  <div class="src">TOF/tof.md · mmWave/RUN.md · mmWave/send_mmw.py · server/analysis_kb.py</div>
+</section>
+
+<!-- 4 · ToF 원시 데이터 -->
+<section class="slide">
+  <div class="kicker">02 · ToF 자세 분류</div>
+  <h2>원시 데이터 <small>VL53L5CX 8×8 · 2026-07-07 수집</small></h2>
+  <div class="body">
+    <div class="cols c64">
+      <table>
+        <tr><th>클래스</th><th class="num">세션</th><th class="num">원시 프레임</th><th class="num">촬영 시간</th></tr>
+        <tr><td><b>edge_sit</b> 걸터앉음</td><td class="num">5</td><td class="num">1,501</td><td class="num">212 s</td></tr>
+        <tr><td><b>empty</b> 빈 침대</td><td class="num">1</td><td class="num">1,001</td><td class="num">563 s</td></tr>
+        <tr><td><b>side_left</b> 좌측 누움</td><td class="num">2</td><td class="num">800</td><td class="num">203 s</td></tr>
+        <tr><td><b>side_right</b> 우측 누움</td><td class="num">4</td><td class="num">1,400</td><td class="num">240 s</td></tr>
+        <tr class="bad"><td><b>sitting</b> 앉음</td><td class="num">2</td><td class="num">701</td><td class="num">75 s</td></tr>
+        <tr><td><b>supine</b> 바로 누움</td><td class="num">4</td><td class="num">1,403</td><td class="num">204 s</td></tr>
+        <tr class="hi"><td><b>합계</b></td><td class="num">18</td><td class="num">6,806</td><td class="num">약 25분</td></tr>
+      </table>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <pre>{"t":"2026-07-07T14:30:06.348",
+ "sensor":"tof1", "resolution":"8x8",
+ "distances_mm":[-1,-1,3179,-1,-1,-1, … 64개],
+ "targets":[1,0,1,1,0,0, … 64개],
+ "label":"supine"}</pre>
+        <div class="card"><ul>
+          <li>한 줄 = 한 센서의 한 측정</li>
+          <li><code>-1</code> = 측정 실패 · 원시 존의 <b>65.3%</b></li>
+          <li>라벨 = 촬영 시 지시한 자세</li>
+          <li>실효 수집률 <b>0.9–7.0 Hz</b> · 설정은 15 Hz · HTTP 전송이 병목</li>
+        </ul></div>
+      </div>
+    </div>
+    <div class="card lim"><h3>표본 규모</h3><ul>
+      <li>대상자 <b>1명</b>(식별자 미기록) · 수집일 <b>1일</b> · 전체 촬영 약 <b>25분</b></li>
+      <li>앉음은 <b>75초</b> · 빈 침대는 <b>1세션</b>뿐 · supine 한 세션(162613)은 2프레임</li>
+    </ul></div>
+  </div>
+  <div class="src">TOF/dataset/*.jsonl · research/alternatives/artifacts/posture_sources.json</div>
+</section>
+
+<!-- 5 · ToF 정제 -->
+<section class="slide">
+  <div class="kicker">02 · ToF 자세 분류</div>
+  <h2>정제 과정</h2>
+  <div class="body">
+    <div class="pipe">
+      <div class="st"><b>1 · 무효값</b><span><code>-1</code> 유지<br>트리 모델에 그대로 입력</span></div><span class="ar">→</span>
+      <div class="st"><b>2 · 침대 ROI</b><span>광선이 침대 폭 0.95 m 밖이면 <code>-1</code><br>기준 거리 2,300 mm 초과 존 제외</span></div><span class="ar">→</span>
+      <div class="st"><b>3 · 센서 결합</b><span>tof1 64 + tof2 64<br>= 128차원 · 3,319쌍</span></div><span class="ar">→</span>
+      <div class="st"><b>4 · 분할</b><span>클래스별 시간순 앞 70% 학습<br>뒤 30% 평가 · 2,320 / 999</span></div>
+    </div>
+    <div class="cols c2">
+      <div class="card lim"><h3>정제 단계의 약점</h3><ul>
+        <li>3단계 결합은 <b>타임스탬프가 아닌 순번</b> 기준입니다. 250 ms 이내로 엄격하게 짝지으면 <b>2,726쌍</b>으로 줄어듭니다.</li>
+        <li>평가 30%는 <b>같은 날 같은 사람</b>의 마지막 구간입니다. 독립 시험셋이 아닙니다.</li>
+        <li>median(w5) 필터본도 만들었지만 배포 모델은 <b>원본으로 학습</b>했습니다.</li>
+      </ul></div>
+      <div class="card"><h3>재실 판정 · 별도 규칙</h3><ul>
+        <li>빈 침대 캘리브레이션 대비 <b>150 mm 이상 가까운 존</b> = 점유</li>
+        <li>진입: 점유 존 8개 이상 · 3프레임 연속</li>
+        <li>유지: 4개 이상 · 이탈 확정: 24프레임 연속</li>
+        <li>8×8 임계는 4×4 값을 비례 조정한 <b>미검증치</b></li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="src">TOF/ml/train_posture.py · TOF/ml/roi.py · server/tof_server.py · research/alternatives/README.md</div>
+</section>
+
+<!-- 6 · ToF 모델 -->
+<section class="slide">
+  <div class="kicker">02 · ToF 자세 분류</div>
+  <h2>모델과 후처리 규칙</h2>
+  <div class="body">
+    <div class="cols c2">
+      <div class="card key"><h3>RandomForestClassifier</h3><ul>
+        <li>n_estimators 200 · max_depth 제한 없음</li>
+        <li>class_weight balanced · random_state 42</li>
+        <li>입력 128차원 (mm) · 출력 6클래스</li>
+        <li>추론 999건 <b>37.2 ms</b> · 개발 PC CPU 실측</li>
+      </ul></div>
+      <div class="card"><h3>6클래스</h3><ul>
+        <li>empty 빈 침대 · supine 바로 누움</li>
+        <li>side_left 좌측 누움 · side_right 우측 누움</li>
+        <li>sitting 앉음 · edge_sit 걸터앉음</li>
+        <li>초기 4×4 수집의 <code>lying</code>은 라벨 모호로 제외</li>
+      </ul></div>
+    </div>
+    <table>
+      <tr><th>후처리</th><th>조건</th><th>목적</th></tr>
+      <tr><td><b>빈 침대 게이트</b></td><td>두 센서 점유 존 합계 0 → RF 결과 무시하고 empty</td><td>빈 침대를 걸터앉음으로 오인하는 오류 방지</td></tr>
+      <tr><td><b>뒤척임</b></td><td>6초 안에 좌·우 누움 전환 2회 이상 → tossing</td><td>프레임 단위 분류에 시간 정보 보완</td></tr>
+      <tr><td><b>가장자리 쏠림</b></td><td>누운 자세 · 점유 존 6개 이상 · 신체 중심 |Y| &gt; 0.25 m · 2회 연속</td><td>낙상 전 위험 자세 표시 · 0.25 m는 튜닝 필요</td></tr>
+    </table>
+  </div>
+  <div class="src">TOF/ml/train_posture.py · TOF/ml/predict_posture.py · server/tof_server.py</div>
+</section>
+
+<!-- 7 · ToF 결과 -->
+<section class="slide">
+  <div class="kicker">02 · ToF 자세 분류</div>
+  <h2>검증 결과 <small>시간분할 70 / 30 · 평가 999쌍</small></h2>
+  <div class="body">
+    <div class="cols c2">
+      <table>
+        <tr><th>클래스</th><th class="num">precision</th><th class="num">recall</th><th class="num">F1</th><th class="num">n</th></tr>
+        <tr class="bad"><td><b>edge_sit</b></td><td class="num">1.000</td><td class="num">0.910</td><td class="num">0.953</td><td class="num">223</td></tr>
+        <tr class="bad"><td><b>empty</b></td><td class="num">0.882</td><td class="num">1.000</td><td class="num">0.938</td><td class="num">150</td></tr>
+        <tr><td><b>side_left</b></td><td class="num">1.000</td><td class="num">0.991</td><td class="num">0.996</td><td class="num">117</td></tr>
+        <tr><td><b>side_right</b></td><td class="num">1.000</td><td class="num">1.000</td><td class="num">1.000</td><td class="num">208</td></tr>
+        <tr><td><b>sitting</b></td><td class="num">1.000</td><td class="num">1.000</td><td class="num">1.000</td><td class="num">102</td></tr>
+        <tr><td><b>supine</b></td><td class="num">0.995</td><td class="num">1.000</td><td class="num">0.997</td><td class="num">199</td></tr>
+        <tr class="hi"><td><b>전체</b></td><td class="num" colspan="2">accuracy 0.979</td><td class="num">0.981</td><td class="num">999</td></tr>
+      </table>
+      <table>
+        <tr><th>비교</th><th class="num">정확도</th><th>비고</th></tr>
+        <tr class="hi"><td><b>RF · 시간분할</b></td><td class="num">97.9%</td><td>배포 설정 · 기준 수치</td></tr>
+        <tr><td><b>RF · 무작위분할</b></td><td class="num">100%</td><td>인접 프레임 상관 누수 · 낙관적</td></tr>
+        <tr><td><b>TabPFN · 시간분할</b></td><td class="num">99.8%</td><td>추론 1건 약 310 ms · RF의 8,310배 · CPU 실측</td></tr>
+        <tr><td><b>이전 4×4 RF</b></td><td class="num">91.7%</td><td>supine recall 0.66 · 8×8 전환 계기</td></tr>
+      </table>
+    </div>
+    <div class="cols c2">
+      <div class="card"><h3>주요 오류</h3><p>걸터앉음 223건 중 <b>20건을 빈 침대로</b> 분류했습니다. 발치 쪽 걸터앉음과 빈 침대의 거리 패턴이 비슷해 생기는 혼동입니다. 운영의 빈 침대 게이트는 반대 방향 오류만 막습니다. <b>걸터앉음을 놓치는 이 오류는 남아 있습니다.</b></p></div>
+      <div class="card"><h3>RF를 유지한 이유</h3><p>TabPFN이 정확도는 높지만 GPU 없는 Pi에서 프레임당 0.3초가 걸려 실시간 처리가 불가능합니다. 정확도 차이 1.9%p보다 <b>엣지 실시간성</b>을 우선했습니다.</p></div>
+    </div>
+  </div>
+  <div class="src">TOF/ml/train_posture.py 재실행(2026-09-28) · TOF/ml/compare_rf_tabpfn.py · TOF/ml/README.md</div>
+</section>
+
+<!-- 8 · ToF 한계 -->
+<section class="slide">
+  <div class="kicker">02 · ToF 자세 분류</div>
+  <h2>97.9%를 그대로 믿으면 안 되는 이유</h2>
+  <div class="body">
+    <div class="stat-row">
+      <div class="stat lim"><div class="l">대상자</div><div class="v">1명</div><div class="d">체격 · 습관 일반화 미검증<br>LOSO 평가 불가</div></div>
+      <div class="stat lim"><div class="l">수집일</div><div class="v">1일</div><div class="d">이불 · 조명 · 설치 오차<br>변화 미반영</div></div>
+      <div class="stat lim"><div class="l">가장 짧은 클래스</div><div class="v">75초</div><div class="d">앉음 · 2세션<br>빈 침대는 1세션</div></div>
+      <div class="stat lim"><div class="l">배포 모델 hold-out</div><div class="v">없음</div><div class="d">전체 데이터로 재학습<br>위 시험셋에서 100%</div></div>
+    </div>
+    <div class="cols c2">
+      <div class="card lim"><h3>평가 설계의 한계</h3><ul>
+        <li>시험셋은 같은 날 · 같은 사람 · 같은 세션의 <b>마지막 30%</b>입니다.</li>
+        <li>97.9%는 <b>같은 사람 재현 성능의 상한</b>에 가깝습니다. 신규 환자 성능이 아닙니다.</li>
+        <li>배포 모델은 시험셋까지 포함해 학습해서 <b>배포 모델 자체의 독립 성능 수치가 없습니다.</b></li>
+        <li>센서 결합이 순번 기준이라 일부 쌍은 시각이 어긋납니다.</li>
+      </ul></div>
+      <div class="card key"><h3>필요한 검증</h3><ul>
+        <li><b>5명 이상 · 여러 날</b> 수집 후 leave-one-subject-out 평가</li>
+        <li>실제 병실 매트리스 · 이불 · 보호대 조건</li>
+        <li>타임스탬프 기준 센서 결합(250 ms)으로 재학습</li>
+        <li>배포 모델과 분리된 고정 시험셋 유지</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="src">TOF/ml/README.md · research/alternatives/artifacts/evaluation.json · posture_model.joblib 재평가</div>
+</section>
+
+<!-- 9 · mmWave 원시 · 정제 -->
+<section class="slide">
+  <div class="kicker">03 · mmWave 보행 평가</div>
+  <h2>원시 데이터와 정제 게이트</h2>
+  <div class="body">
+    <div class="cols c2">
+      <div class="card"><h3>원시 데이터</h3><ul>
+        <li><b>TLV 1010</b> 3D People Tracking · track당 112 B (tid + 위치 · 속도 · 가속도 등 27 float)</li>
+        <li><b>TLV 1020</b> 포인트 클라우드 (x · y · z · doppler)</li>
+        <li>cfg <code>AOP_bed_2m7_d15</code> · sensorPosition 3 m · 하향 15°</li>
+        <li>boundaryBox x ±3.5 · y 0.25–6 · z 0–2.5 m</li>
+      </ul></div>
+      <div class="card"><h3>침대 영역</h3><ul>
+        <li>매트리스 코어 x −0.9–0.4 · y 1.0–3.6 m</li>
+        <li>옆 의자 고스트가 침대 후보로 잡히는 문제를 실측 후 축소</li>
+        <li>침대 실측 215 × 90 cm 기준 · 1회 실측 잠정치</li>
+      </ul></div>
+    </div>
+    <table>
+      <tr><th>게이트</th><th>조건</th><th>불통과 시</th></tr>
+      <tr><td><b>1 · 신뢰도</b></td><td>track <code>reliable=false</code> (고스트 · 거울상)</td><td>측정 폐기</td></tr>
+      <tr><td><b>2 · 환자 특정</b></td><td>최근 60초 이력 기반 침대 소속도 ≥ 0.25 · 0.7 m 이내 분리 track 병합</td><td>측정 보류 · 낙상 규칙만 감시</td></tr>
+      <tr><td><b>3 · 보행 판정</b></td><td>6초 윈도우 · 평균 속력 ≥ 0.20 m/s · 순이동 ≥ 0.30 m · 직진성(순이동 ÷ 경로 길이) ≥ 0.5</td><td>기준선 미반영 · 낙상 규칙만 감시</td></tr>
+      <tr class="hi"><td><b>통과</b></td><td>보행 지표 6종 계산 → 기준선 갱신 → Z-score</td><td>—</td></tr>
+    </table>
+  </div>
+  <div class="src">mmWave/send_mmw.py · mmWave/AOP_bed_2m7_d15.cfg · mmWave/RISK_NOTES.md · server/mmw_logic.py</div>
+</section>
+
+<!-- 10 · 보행 지표 -->
+<section class="slide">
+  <div class="kicker">03 · mmWave 보행 평가</div>
+  <h2>보행 지표 6종 산출식 <small>6초 윈도우 · 환자 track 기준</small></h2>
+  <div class="body">
+    <table>
+      <tr><th>지표</th><th>변수</th><th>산출</th><th>위험 방향</th><th class="num">σ 하한</th></tr>
+      <tr><td><b>보행 속도</b></td><td class="mono">speed</td><td>윈도우 평균 속력 (m/s)</td><td>감소</td><td class="num">0.05</td></tr>
+      <tr><td><b>속도 변동</b></td><td class="mono">speed_cv</td><td>속력 표준편차 ÷ 평균</td><td>증가</td><td class="num">0.03</td></tr>
+      <tr><td><b>좌우 동요</b></td><td class="mono">sway</td><td>시작–끝 진행축에 수직인 편차의 표준편차 (m)</td><td>증가</td><td class="num">0.02</td></tr>
+      <tr><td><b>정지 비율</b></td><td class="mono">freeze_ratio</td><td>속력 &lt; 0.15 m/s 인 시간 비율</td><td>증가</td><td class="num">0.03</td></tr>
+      <tr><td><b>추정 보폭</b></td><td class="mono">stride_length</td><td>평균 속력 ÷ cadence · cadence = 속력 시계열 FFT 최대 주파수</td><td>감소</td><td class="num">0.03</td></tr>
+      <tr><td><b>보폭 변동</b></td><td class="mono">stride_cv</td><td>걸음 주기별 보폭의 표준편차 ÷ 평균</td><td>증가</td><td class="num">0.02</td></tr>
+    </table>
+    <div class="cols c2">
+      <div class="card"><h3>σ 하한을 둔 이유</h3><p>누적 초기에는 분산이 0에 가까워 Z가 폭발합니다. 지표별 하한으로 분모를 고정합니다.</p></div>
+      <div class="card lim"><h3>알려진 왜곡</h3><p>느린 셔플링에서는 평균 속력이 작아 <b>speed_cv가 폭증</b>합니다. 회전 보행은 여러 지표를 동시에 왜곡해서 직진성 게이트로 제외합니다.</p></div>
+    </div>
+  </div>
+  <div class="src">mmWave/send_mmw.py (_estimate_stride · gait window) · server/mmw_logic.py (SIGMA_FLOOR)</div>
+</section>
+
+<!-- 11 · 개인 기준 판정 -->
+<section class="slide">
+  <div class="kicker">03 · mmWave 보행 평가</div>
+  <h2>개인 기준 판정 규칙</h2>
+  <div class="body">
+    <div class="formula">μᵢ, σᵢ = 누적 sum · sumsq 로 계산 &nbsp;·&nbsp; Zᵢ = (xᵢ − μᵢ) ÷ max(σᵢ, 하한ᵢ) &nbsp;·&nbsp; S = Σ |Zᵢ|</div>
+    <div class="cols c3">
+      <div class="card"><h3>단계 임계</h3><ul>
+        <li>정상 S &lt; 3 · 주의 3–6</li>
+        <li>경고 6–9 · 위험 S ≥ 9</li>
+        <li>지표 4→6개 확장 시 <b>1.5배 비례 조정</b>한 설계값</li>
+      </ul></div>
+      <div class="card"><h3>활성 조건</h3><ul>
+        <li>누적 5건 이상부터 Z 계산</li>
+        <li>누적 14일 미만은 정식 알림 보류</li>
+        <li>보행 판정 통과 윈도우만 누적</li>
+      </ul></div>
+      <div class="card"><h3>절대 규칙</h3><ul>
+        <li>한 윈도우 안 높이 급강하 &gt; <b>1.2 m</b></li>
+        <li>기준선 · 게이트와 무관하게 즉시 위험</li>
+        <li>track 유지가 전제 조건</li>
+      </ul></div>
+    </div>
+    <table>
+      <tr><th>같은 방식의 다른 기준선</th><th>지표</th><th>단계 임계</th><th class="num">현재 누적</th></tr>
+      <tr><td><b>mmWave 보행</b></td><td>보행 지표 6종</td><td class="num">3 · 6 · 9</td><td class="num">75건</td></tr>
+      <tr><td><b>ToF 행동 패턴</b></td><td>자세 전환 빈도 · 걸터앉음 비율 · 이탈 비율</td><td class="num">1.5 · 3 · 4.5</td><td class="num">12건</td></tr>
+      <tr class="bad"><td><b>이탈 지속시간</b></td><td>침상 이탈 지속시간 · σ 하한 60 s</td><td class="num">1.5 · 3 · 4.5</td><td class="num">1건 · Z 미계산</td></tr>
+    </table>
+    <div class="card lim"><p>모든 임계값은 <b>라벨 데이터로 학습한 값이 아닌 설계값</b>입니다. 정답 라벨이 생기면 재조정해야 합니다.</p></div>
+  </div>
+  <div class="src">server/mmw_logic.py · server/tof_logic.py · server/behavior_fsm.py · server/*_baseline.json</div>
+</section>
+
+<!-- 12 · mmWave 결과 · 한계 -->
+<section class="slide">
+  <div class="kicker">03 · mmWave 보행 평가</div>
+  <h2>실측 결과와 한계</h2>
+  <div class="body">
+    <div class="cols c2">
+      <table>
+        <tr><th>기준선 bed_01 · 보행 윈도우 75건</th><th class="num">평균</th></tr>
+        <tr><td><b>보행 속도</b></td><td class="num">0.827 m/s</td></tr>
+        <tr><td><b>속도 변동</b></td><td class="num">0.145</td></tr>
+        <tr><td><b>좌우 동요</b></td><td class="num">0.049 m</td></tr>
+        <tr><td><b>정지 비율</b></td><td class="num">0.101</td></tr>
+        <tr><td><b>추정 보폭</b></td><td class="num">0.516 m</td></tr>
+        <tr><td><b>보폭 변동</b></td><td class="num">0.094</td></tr>
+      </table>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card"><h3>연출 검증 · 1회</h3><p>정상 보행 S ≈ 2 · 불안정 보행 연출 S 3.7 → 7.9. 단계가 올라가는 동작은 확인했습니다. 반복 측정과 통계 검증은 하지 않았습니다.</p></div>
+        <div class="card"><h3>과거 보행 재생 · 613윈도우</h3><p>사용 562 · 품질 보류 37 · 범위 이탈 14. ADWIN 계열 변화점 감시기로 재생한 결과 변화 후보 0건입니다.</p></div>
+      </div>
+    </div>
+    <div class="card lim"><h3>한계</h3><ul>
+      <li>기준선 75건은 <b>환자가 아닌 개발 환경 보행</b>이며 대상자를 식별할 수 없습니다. 임상 민감도 · 특이도는 측정할 수 없습니다.</li>
+      <li>기준선이 <b>평생 누적</b>이라 서서히 나빠지는 보행은 새 정상으로 흡수됩니다. 슬라이딩 윈도우가 필요합니다.</li>
+      <li>방에 1명뿐이면 환자로 간주합니다. 간호 · 청소 인력의 보행이 섞일 수 있습니다.</li>
+      <li>쓰러지면 track이 소실되는 경우가 많아 높이 급강하 규칙이 놓칠 수 있습니다.</li>
+    </ul></div>
+  </div>
+  <div class="src">server/mmw_baseline.json · docs/operating_concept_day_night.md · research/alternatives/artifacts/evaluation.json · mmWave/RISK_NOTES.md</div>
+</section>
+
+<!-- 13 · 연구: 이탈 예측 -->
+<section class="slide">
+  <div class="kicker research">04 · 연구 단계 · 미배포</div>
+  <h2>이탈 예측 <small>mmWave 점군 시퀀스 → 3초 내 이탈</small></h2>
+  <div class="body">
+    <div class="cols c2">
+      <div class="card rs"><h3>데이터</h3><ul>
+        <li>시퀀스 569개 · 30프레임 × 64점 × (x · y · z · doppler)</li>
+        <li>라벨: ToF 재실이 3초 안에 빈 침대로 바뀌면 임박 · <b>ToF 자동 약라벨</b></li>
+        <li>이탈 이벤트 <b>17건</b> · 임박 55 / 유지 208</li>
+        <li>대상자 1명 · 1세션 · 시간분할 70 / 30</li>
+      </ul></div>
+      <table>
+        <tr><th>모델</th><th class="num">F1</th><th class="num">recall</th></tr>
+        <tr><td>다수 예측 baseline</td><td class="num">—</td><td class="num">acc 64.6%</td></tr>
+        <tr><td>RF · 집계 특징</td><td class="num">13</td><td class="num">7%</td></tr>
+        <tr class="hi"><td><b>LSTM · 시간순</b></td><td class="num">42</td><td class="num">36%</td></tr>
+        <tr><td>GRU · 무증강 · 5시드</td><td class="num">50.4 ± 13.4</td><td class="num">41%</td></tr>
+        <tr><td>LSTM + 타임워프 · 지터</td><td class="num">44.9 ± 11.2</td><td class="num">38%</td></tr>
+        <tr class="bad"><td>LSTM + 회전 · 스케일</td><td class="num">32.2 ± 10.8</td><td class="num">23%</td></tr>
+      </table>
+    </div>
+    <div class="cols c2">
+      <div class="card"><h3>확인한 것</h3><p>이탈 예측에는 정적 자세보다 <b>시간 순서</b>가 중요합니다. 고정 설치 환경이라 회전 · 스케일 증강은 물리적으로 불가능한 배치를 만들어 성능을 떨어뜨립니다.</p></div>
+      <div class="card lim"><h3>표본 한계</h3><ul>
+        <li>시험 양성 <b>28개</b> → F1 표준편차 <b>±11–14</b></li>
+        <li>같은 코드를 재실행하자 무증강 F1이 39.6 → <b>48.7</b>로 변동</li>
+        <li>교사 라벨(ToF) 오류가 그대로 전파됩니다</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="src">mmWave/exit_seq/HANDOFF.md · mmWave/exit_seq/AUGMENTATION_NOTES.md · seq_dataset.jsonl.gz</div>
+</section>
+
+<!-- 14 · 연구: 융합 · 이상 탐지 -->
+<section class="slide">
+  <div class="kicker research">04 · 연구 단계 · 미배포</div>
+  <h2>센서 융합과 이상 탐지 비교</h2>
+  <div class="body">
+    <div class="cols c2">
+      <div>
+        <div class="lane-lbl">융합 · 3초 뒤 이탈 약라벨 · 시험 15건 (양성 5)</div>
+        <table>
+          <tr><th>방식</th><th class="num">F1</th><th class="num">ROC-AUC</th><th class="num">TN FP FN TP</th></tr>
+          <tr class="hi"><td><b>ToF 단독</b></td><td class="num">0.667</td><td class="num">0.82</td><td class="num">9 1 2 3</td></tr>
+          <tr><td>mmWave 단독</td><td class="num">0.222</td><td class="num">0.44</td><td class="num">7 3 4 1</td></tr>
+          <tr class="bad"><td>조기 결합</td><td class="num">0.000</td><td class="num">0.90</td><td class="num">10 0 5 0</td></tr>
+          <tr><td>지연 결합 max</td><td class="num">0.500</td><td class="num">0.76</td><td class="num">6 4 2 3</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="lane-lbl">이상 탐지 대리 과제 · 누움 대비 앉음 · 걸터앉음 · 시험 59윈도우</div>
+        <table>
+          <tr><th>방식</th><th class="num">F1</th><th class="num">TN FP FN TP</th></tr>
+          <tr><td><b>CMP · AB-join</b></td><td class="num">1.000</td><td class="num">17 0 0 42</td></tr>
+          <tr><td><b>LSTM-AE</b></td><td class="num">0.955</td><td class="num">13 4 0 42</td></tr>
+        </table>
+        <div class="card" style="margin-top:12px"><p>학습 27 · 보정 6 · 시험 59윈도우. 자세 차이를 가려내는 대리 과제일 뿐 <b>임상 이상이나 낙상 성능이 아닙니다.</b></p></div>
+      </div>
+    </div>
+    <div class="cols c2">
+      <div class="card lim"><h3>라벨 한계</h3><ul>
+        <li>신뢰도 0.8 이상의 엄격 라벨은 <b>0건</b>이라 약라벨로만 실험했습니다</li>
+        <li>약라벨: 양성 23 · 음성 208 · 판단 보류 338</li>
+        <li>보정 구간에 양성이 없어 임계 0.5 고정 · ToF–mmWave 시계 동기화 미검증</li>
+      </ul></div>
+      <div class="card key"><h3>배포 판단</h3><p>어떤 융합 방식도 ToF 단독보다 낫지 않았습니다. 시험 결과를 보고 임계를 조정하지 않았고 운영은 <b>단계 최댓값 규칙</b>을 유지합니다.</p></div>
+    </div>
+  </div>
+  <div class="src">research/alternatives/artifacts/evaluation.json · research/alternatives/README.md</div>
+</section>
+
+<!-- 15 · 위험도 통합 -->
+<section class="slide">
+  <div class="kicker">05 · 통합 · 리포트</div>
+  <h2>위험도 통합 규칙</h2>
+  <div class="body">
+    <div class="pipe">
+      <div class="st"><b>ToF 행동 패턴</b><span>자세 전환 · 걸터앉음 · 이탈 비율<br>개인 기준 단계</span></div>
+      <div class="st"><b>ToF 이탈 지속시간</b><span>평소 이탈 시간 대비<br>개인 기준 단계</span></div>
+      <div class="st"><b>mmWave 보행</b><span>보류 · 신뢰 불가 시 제외<br>개인 기준 단계</span></div><span class="ar">→</span>
+      <div class="st"><b>단계 점수</b><span>정상 0.1 · 주의 0.4<br>경고 0.7 · 위험 0.95</span></div><span class="ar">→</span>
+      <div class="st" style="border-color:var(--accent-line);background:var(--accent-soft)"><b>최댓값</b><span>대표 위험도<br>+ 가장 높은 성분 표시</span></div>
+    </div>
+    <div class="cols c2">
+      <div class="card"><h3>최댓값을 쓴 이유</h3><ul>
+        <li>평균을 쓰면 한 센서만 위험할 때 <b>신호가 희석</b>됩니다</li>
+        <li>결정 수준에서 보수적으로 결합합니다</li>
+        <li>융합 비교 실험에서 학습형 결합이 단일 센서보다 낫지 않았습니다</li>
+      </ul></div>
+      <div class="card lim"><h3>현재 상태</h3><ul>
+        <li>이탈 지속시간 기준선은 <b>1건</b>이라 아직 Z를 계산하지 않습니다</li>
+        <li>ToF 행동 기준선 12건 · mmWave 보행 75건</li>
+        <li>단계 점수 대응표는 확률이 아닌 <b>순서 척도</b>입니다</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="src">server/integrated_analysis.py (compute_risk_score) · server/*_baseline.json</div>
+</section>
+
+<!-- 16 · AI 리포트 · RAG -->
+<section class="slide">
+  <div class="kicker">05 · 통합 · 리포트</div>
+  <h2>AI 종합 리포트와 논문 검색</h2>
+  <div class="body">
+    <div class="pipe">
+      <div class="st"><b>환자 기록 모으기</b><span>프로필 · 위험인자 · 투약<br>현재 판정 · 위험 점수<br>최근 24시간 활동 · 직전 분석</span></div><span class="ar">→</span>
+      <div class="st"><b>관련 논문 찾기</b><span>LanceDB · 논문 73편 · 631 chunk<br>text-embedding-3-small + BM25<br>RRF k=60 결합</span></div><span class="ar">→</span>
+      <div class="st"><b>AI가 설명 작성</b><span>gpt-4o-mini · temperature 0.3<br>JSON 모드 · 15개 항목<br>새 수치 생성 금지</span></div>
+    </div>
+    <div class="cols c64">
+      <div>
+        <div class="lane-lbl">검색 평가 · 질의 18개 · 고유 논문 top-5</div>
+        <table>
+          <tr><th>방식</th><th class="num">Recall@5</th><th class="num">MRR@5</th><th class="num">nDCG@5</th></tr>
+          <tr><td>dense</td><td class="num">1.000</td><td class="num">0.963</td><td class="num">0.972</td></tr>
+          <tr><td>BM25</td><td class="num">1.000</td><td class="num">1.000</td><td class="num">1.000</td></tr>
+          <tr class="hi"><td><b>hybrid · 운영</b></td><td class="num">1.000</td><td class="num">1.000</td><td class="num">1.000</td></tr>
+        </table>
+      </div>
+      <div class="card"><h3>설계 원칙</h3><ul>
+        <li>위험 점수는 LLM이 아닌 규칙 · 통계로 계산</li>
+        <li>BM25 0점 문서는 순위 결합에서 제외</li>
+        <li>API 실패 시 가짜 결과 없이 실패 반환</li>
+        <li>투약 조정 항목은 참고용 문구를 강제</li>
+      </ul></div>
+    </div>
+    <div class="card lim"><h3>한계</h3><ul>
+      <li>정답셋 18개는 <b>개발 과정에서 작성</b>했고 독립 전문가 검수 전입니다. 1.0은 작은 개발셋 기준입니다.</li>
+      <li>리포트 문장의 정확성과 임상 타당성은 평가하지 않았습니다. 리포트 생성 시 환자 기록이 외부 API로 전송됩니다.</li>
+    </ul></div>
+  </div>
+  <div class="src">server/integrated_analysis.py · server/paper_kb.py · server/retrieval.py · server/ai_report.py · evaluation.json (rag)</div>
+</section>
+
+<!-- 17 · 데이터 현황 -->
+<section class="slide">
+  <div class="kicker">06 · 데이터 현황</div>
+  <h2>보유 데이터와 정답 라벨</h2>
+  <div class="body">
+    <table>
+      <tr><th>데이터</th><th class="num">규모</th><th>라벨 성격</th><th>용도</th></tr>
+      <tr><td><b>ToF 8×8 자세 촬영</b></td><td class="num">6,806 프레임</td><td>촬영 시 지시한 자세</td><td>RF 학습 · 평가</td></tr>
+      <tr><td><b>ToF 4×4 자세 촬영</b></td><td class="num">19,000 프레임</td><td>촬영 시 지시한 자세</td><td>초기 모델 · 현재 미사용</td></tr>
+      <tr><td><b>ToF 4×4 원시 백업</b></td><td class="num">866,594 행</td><td>라벨 없음</td><td>분석용 보관</td></tr>
+      <tr><td><b>mmWave 원시 백업</b></td><td class="num">1,417 행</td><td>라벨 없음</td><td>분석용 보관</td></tr>
+      <tr><td><b>mmWave 이탈 시퀀스</b></td><td class="num">569 시퀀스</td><td>ToF 자동 약라벨</td><td>이탈 예측 연구</td></tr>
+      <tr><td><b>mmWave 보행 기준선</b></td><td class="num">75 윈도우</td><td>라벨 없음</td><td>개인 기준 판정</td></tr>
+      <tr><td><b>운영 DB 활동 로그</b></td><td class="num">2,466 행</td><td>시뮬레이션 2,455 (낙상 103 · 이탈 252 등) · 하드웨어 11</td><td>대시보드 · 리포트 시연</td></tr>
+      <tr class="bad"><td><b>임상 낙상 라벨</b></td><td class="num">0 건</td><td>—</td><td>—</td></tr>
+    </table>
+    <div class="cols c2">
+      <div class="card key"><h3>지금 주장할 수 있는 범위</h3><ul>
+        <li>1인 기준 자세 분류 정확도</li>
+        <li>규칙 · 기준선 파이프라인의 동작</li>
+        <li>개발셋 기준 논문 검색 품질</li>
+      </ul></div>
+      <div class="card lim"><h3>아직 주장할 수 없는 것</h3><ul>
+        <li><b>낙상 예측 성능</b> · 이탈 예측 성능</li>
+        <li>신규 환자에 대한 자세 분류 성능</li>
+        <li>임계값 3 · 6 · 9의 임상 타당성</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="src">research/alternatives/artifacts/project_audit.json · TOF/dataset/README.md · server/majubom_4x4bak.db</div>
+</section>
+
+<!-- 18 · 다음 단계 -->
+<section class="slide">
+  <div class="kicker">06 · 데이터 현황</div>
+  <h2>다음 단계</h2>
+  <div class="body">
+    <table>
+      <tr><th>과제</th><th>현재</th><th>다음</th></tr>
+      <tr><td><b>대상자 확대</b></td><td>1명 · 1일</td><td>5명 이상 · 여러 날 수집 → leave-one-subject-out 평가</td></tr>
+      <tr><td><b>정답 라벨</b></td><td>임상 라벨 0건 · 검수 대기 이탈 후보 48건</td><td>간호 기록 기반 사람 검수 · 영상 없는 기준 기록 확보</td></tr>
+      <tr><td><b>센서 결합</b></td><td>순번 기준 짝짓기</td><td>타임스탬프 250 ms 결합 · ToF–mmWave 시계 동기화 검증</td></tr>
+      <tr><td><b>기준선</b></td><td>평생 누적 · 1명이면 환자로 간주</td><td>슬라이딩 윈도우 · 비환자 보행 배제</td></tr>
+      <tr><td><b>임계값</b></td><td>설계값 3 · 6 · 9</td><td>라벨 기반 재조정 · 개인 간 차이는 혼합효과 모형(LMM) 검토</td></tr>
+      <tr><td><b>이탈 예측</b></td><td>LSTM F1 42 · 이탈 17건</td><td>이탈 100건 이상 확보 후 GRU · 시계열 증강 재평가</td></tr>
+      <tr><td><b>알림 채널</b></td><td>대시보드 표시만 구현</td><td>간호사 단말 푸시 · 콜벨 연동</td></tr>
+    </table>
+  </div>
+  <div class="src">research/alternatives/artifacts/review_queue.jsonl · mmWave/RISK_NOTES.md · docs/operating_concept_day_night.md</div>
+</section>
+
+</div>
+
+<div id="nav"><button id="prev">←</button><button id="next">→</button></div>
+
+<script>
+(function(){
+  var stage=document.getElementById('stage');
+  var slides=[].slice.call(stage.querySelectorAll('.slide'));
+  var cur=0;
+  slides.forEach(function(s,i){ var p=document.createElement('div'); p.className='pg'; p.textContent=(i+1)+' / '+slides.length; s.appendChild(p); });
+  function fit(){ var k=Math.min(innerWidth/1440,innerHeight/810); stage.style.transform='translate(-50%,-50%) scale('+k+')'; }
+  addEventListener('resize',fit); fit();
+  function go(n){
+    cur=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,i){ s.classList.toggle('active',i===cur); });
+    try{ history.replaceState(null,'','#'+(cur+1)); }catch(e){}
+  }
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k==='PageDown'||k===' '){ e.preventDefault(); go(cur+1); }
+    else if(k==='ArrowLeft'||k==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(k==='Home') go(0);
+    else if(k==='End') go(slides.length-1);
+    else if(k==='f'||k==='F'){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(function(){}); }
+  });
+  document.getElementById('prev').onclick=function(){ go(cur-1); };
+  document.getElementById('next').onclick=function(){ go(cur+1); };
+  var h=parseInt((location.hash||'').slice(1),10);
+  go(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>
