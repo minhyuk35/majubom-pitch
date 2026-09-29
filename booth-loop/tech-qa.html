@@ -140,7 +140,7 @@ pre{font-family:var(--mono);font-size:13px;line-height:1.5;color:var(--text-2);b
     <div class="pipe">
       <div class="st"><b>VL53L5CX ×2</b><span>머리맡 · 발치<br>8×8 멀티존 · 설정 15 Hz</span></div><span class="ar">→</span>
       <div class="st"><b>ESP32-S3</b><span>센서별 독립 I2C 버스<br>JSON 직렬화</span></div><span class="ar">→</span>
-      <div class="st"><b>WiFi HTTP POST</b><span>2.4 GHz · /tof<br>실효 0.9–7 Hz / 센서</span></div><span class="ar">→</span>
+      <div class="st"><b>WiFi HTTP POST</b><span>2.4 GHz · /tof<br>저장 간격 0.9–7 Hz / 센서</span></div><span class="ar">→</span>
       <div class="st"><b>tof_server.py :5001</b><span>재실 · RF 자세 · 쏠림 규칙<br>Raspberry Pi 5</span></div>
     </div>
     <div class="lane-lbl">침대 밖 · mmWave</div>
@@ -187,7 +187,7 @@ pre{font-family:var(--mono);font-size:13px;line-height:1.5;color:var(--text-2);b
           <li>한 줄 = 한 센서의 한 측정</li>
           <li><code>-1</code> = 측정 실패 · 원시 존의 <b>65.3%</b></li>
           <li>라벨 = 촬영 시 지시한 자세</li>
-          <li>실효 수집률 <b>0.9–7.0 Hz</b> · 설정은 15 Hz · HTTP 전송이 병목</li>
+          <li>저장된 수집률 <b>0.9–7.0 Hz</b> · 센서 설정은 15 Hz · 세션마다 다름</li>
         </ul></div>
       </div>
     </div>
