@@ -50,15 +50,13 @@ body.idle{cursor:none}
 
 /* ── 기술개발 배경 ── */
 .bg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.bg-card{background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:26px 26px 28px}
-.bg-num{font-size:15px;font-weight:800;color:var(--text-3);margin-bottom:14px}
-.bg-big{font-size:38px;font-weight:900;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+.bg-card{background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:32px 30px 34px;min-height:300px;display:flex;flex-direction:column}
+.bg-num{font-size:15px;font-weight:800;color:var(--text-3)}
+/* 제목은 한 줄 · 위아래 auto 여백으로 번호와 구분선 사이 가운데 */
+.bg-big{font-size:38px;font-weight:900;line-height:1.25;letter-spacing:-.02em;white-space:nowrap;margin:auto 0;padding:18px 0}
 .bg-big em{font-style:normal;color:var(--accent)}
-.bg-small{font-size:16px;color:var(--text-2);line-height:1.55}
-.goal{margin-top:18px;display:flex;align-items:center;gap:18px;background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:18px;padding:22px 28px}
-.goal-label{flex:0 0 auto;font-size:15px;font-weight:800;color:var(--accent);background:rgba(91,138,245,.18);border-radius:100px;padding:6px 16px}
-.goal-text{font-size:26px;font-weight:900}
-.src{margin-top:12px;font-size:12.5px;color:var(--text-3);text-align:right}
+.bg-small{padding-top:18px;border-top:1px solid var(--border);font-size:17px;color:var(--text-2);line-height:1.6}
+.src{margin-top:16px;font-size:12.5px;color:var(--text-3);text-align:right}
 
 /* ── 기존 방식과의 차이 ── */
 .cmp{display:grid;grid-template-columns:1fr 200px 1fr;gap:12px 14px;align-items:stretch}
@@ -97,6 +95,8 @@ body.idle{cursor:none}
 /* ── 상세 카드 ── */
 .spec-card{background:var(--surface-2);border:1px solid var(--border);border-radius:20px;display:flex;gap:30px;align-items:flex-start;padding:28px}
 .spec-photo{width:250px;height:340px;object-fit:cover;border-radius:14px;flex:0 0 auto;border:1px solid var(--border)}
+.spec-card.wide{align-items:center}
+.spec-photo.wide{width:580px;height:auto;object-fit:contain}
 .spec-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:18px}
 .sp-label{font-size:13px;font-weight:800;color:var(--text-3);letter-spacing:.04em;margin-bottom:7px}
 .sp-text{font-size:22px;font-weight:800;line-height:1.4}
@@ -121,36 +121,19 @@ body.idle{cursor:none}
 .rl-range{font-size:13px;color:var(--text-3);margin-top:3px;font-family:ui-monospace,Consolas,monospace}
 .algo-note{font-size:14px;line-height:1.5;color:var(--text-2);margin-top:14px}
 
-/* ── AI 종합 리포트 ── */
-.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.report-process{display:flex;flex-direction:column;gap:12px}
-.report-step{display:flex;gap:18px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:20px 24px}
-.report-no{font-size:17px;font-weight:900;color:var(--accent);padding-top:3px}
-.report-step h3{font-size:23px;font-weight:900;line-height:1.25;margin-bottom:7px}
-.report-step h3 em{font-size:14px;font-style:normal;color:var(--accent);margin-left:8px}
-.report-step p{font-size:16px;line-height:1.5;color:var(--text-2)}
-.report-sheet{background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:24px 30px}
-.report-sheet-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.report-sheet-head span{font-size:24px;font-weight:900}
-.report-sheet-head small{font-size:14px;color:var(--text-2)}
-.report-section{padding-top:18px}
-.report-section b{font-size:20px;font-weight:900}
-.report-section p{font-size:16px;color:var(--text-2);line-height:1.45;margin-top:4px}
-.report-role{display:flex;align-items:center;justify-content:center;gap:24px;padding:17px 20px;margin-top:18px;background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:14px;font-size:20px}
-.report-role span{color:var(--accent)}
-
 /* ── 시연 영상 ── */
 .slide.video-slide{padding:24px 40px calc(var(--cap-h) + 4px)}
 .demo-head{width:100%;display:flex;align-items:baseline;gap:16px;margin-bottom:16px}
 .demo-head h2{font-size:34px;font-weight:900;letter-spacing:-.02em}
 .demo-head p{font-size:16px;color:var(--text-2)}
-/* 두 화면 높이를 맞추려고 열 비율 = 가로세로비 (16:9 · 1000:645) */
-.demo-grid{width:100%;display:grid;grid-template-columns:1.778fr 1.55fr;gap:16px;align-items:end}
-.demo-fig figcaption{margin-bottom:8px;font-size:16px;font-weight:800;color:var(--text-1)}
+/* 세 화면 높이를 맞추려고 열 비율 = 각 화면의 가로세로비 (16:9 · 1000:645 · 9:16) */
+.demo-grid{width:100%;display:grid;grid-template-columns:1.778fr 1.55fr .5625fr;gap:14px;align-items:end}
+.demo-fig figcaption{margin-bottom:8px;font-size:16px;font-weight:800;color:var(--text-1);white-space:nowrap}
 .demo-frame{position:relative;background:#000;border:1px solid var(--border);border-radius:14px;overflow:hidden}
 .demo-frame video,.demo-frame canvas{display:block;width:100%;height:100%;object-fit:contain;background:#000}
 .demo-frame.scene{aspect-ratio:16/9}
 .demo-frame.monitor{aspect-ratio:1000/645}
+.demo-frame.phone{aspect-ratio:9/16;border-radius:18px}
 .scene-label{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:100px;font-size:14px;font-weight:800;background:rgba(15,17,23,.8);color:var(--text-1);border:1px solid var(--border)}
 .scene-label::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
 
@@ -192,16 +175,15 @@ body.is-paused #paused{display:block}
   </div>
 </div>
 
-<!-- 2 · 기술개발 배경 : 빈도 → 시점 → 한계 → 목표 -->
+<!-- 2 · 기술개발 배경 : 빈도 → 문제 → 영향 -->
 <div class="slide" data-caps="background">
   <div class="slide-inner">
     <h2 class="s-title">기술개발 배경</h2>
     <div class="bg-grid">
-      <div class="bg-card fx" id="bg1"><div class="bg-num">01 · 빈도</div><div class="bg-big">10건 중 <em>4건</em></div><div class="bg-small">국내 요양병원 낙상사고 중<br>치매 환자 비율 (39.3%)</div></div>
+      <div class="bg-card fx" id="bg1"><div class="bg-num">01 · 빈도</div><div class="bg-big">매년 10건 중 <em>4건</em></div><div class="bg-small">국내 요양병원 낙상사고 중<br>치매 환자 비율 (39.3%)</div></div>
       <div class="bg-card fx" id="bg2"><div class="bg-num">02 · 문제</div><div class="bg-big">낙상으로 인한 사망</div><div class="bg-small">고관절이 골절된 고령자 3명 중 1명은<br>1년 안에 사망합니다</div></div>
       <div class="bg-card fx" id="bg3"><div class="bg-num">03 · 영향</div><div class="bg-big">사회적 비용 증가</div><div class="bg-small">낙상 사망으로 인한 비용<br>연간 1조 2500억원</div></div>
     </div>
-    <div class="goal fx" id="bg4"><span class="goal-label">개발 목표</span><span class="goal-text">착용·촬영 없이 낙상 예측을 하여 예방</span></div>
     <p class="src">출처: 국내 요양병원 최근 4년(2021–2024) 낙상사고 분석 — 치매군과 비치매군 비교 (KCI)</p>
   </div>
 </div>
@@ -211,19 +193,19 @@ body.is-paused #paused{display:block}
   <div class="slide-inner" style="max-width:1160px">
     <h2 class="s-title">기존 방식과의 차이</h2>
     <div class="cmp">
-      <div class="cmp-head old">기존 방식</div><div></div><div class="cmp-head new rv" id="nh">제안 기술</div>
+      <div class="cmp-head old">기존 방식</div><div></div><div class="cmp-head new" id="nh">제안 기술</div>
 
-      <div class="cmp-cell old fx" id="o1"><b>웨어러블</b><span>치매 어르신의 인지 저하로 지속적 착용 어려움 · 임의 제거</span></div>
-      <div class="cmp-mid"><span class="cmp-pill fx rv" id="p1">접촉<i>→</i>비접촉</span></div>
-      <div class="cmp-cell new fx rv" id="n1"><b>비접촉 센싱</b><span>침대 주변 설치 · 착용 불필요</span></div>
+      <div class="cmp-cell old fx" id="o1"><b>웨어러블</b><span>치매 환자의 인지 저하로 지속적 착용 어려움 · 임의 제거</span></div>
+      <div class="cmp-mid"><span class="cmp-pill fx" id="p1">접촉<i>→</i>비접촉</span></div>
+      <div class="cmp-cell new fx" id="n1"><b>비접촉 센싱</b><span>침대 주변 설치 · 착용 불필요</span></div>
 
-      <div class="cmp-cell old fx" id="o2"><b>카메라</b><span>고령자 사생활 침해</span></div>
-      <div class="cmp-mid"><span class="cmp-pill fx rv" id="p2">영상<i>→</i>비영상</span></div>
-      <div class="cmp-cell new fx rv" id="n2"><b>비영상 센싱</b><span>거리·위치 데이터만 수집</span></div>
+      <div class="cmp-cell old fx" id="o2"><b>카메라</b><span>치매 환자 사생활 침해</span></div>
+      <div class="cmp-mid"><span class="cmp-pill fx" id="p2">영상<i>→</i>비영상</span></div>
+      <div class="cmp-cell new fx" id="n2"><b>비영상 센싱</b><span>거리·위치 데이터만 수집</span></div>
 
       <div class="cmp-cell old fx" id="o3"><b>압력 매트(단일 센서)</b><span>센서 하나로는 감지할 수 있는 상황이 제한적</span></div>
-      <div class="cmp-mid"><span class="cmp-pill fx rv" id="p3">단일<i>→</i>복합</span></div>
-      <div class="cmp-cell new fx rv" id="n3"><b>복합 센서</b><span>ToF와 mmWave를 결합해 다양한 상황을 감지</span></div>
+      <div class="cmp-mid"><span class="cmp-pill fx" id="p3">단일<i>→</i>복합</span></div>
+      <div class="cmp-cell new fx" id="n3"><b>복합 센서</b><span>ToF와 mmWave를 결합해 다양한 상황을 감지</span></div>
     </div>
   </div>
 </div>
@@ -266,9 +248,9 @@ body.is-paused #paused{display:block}
           <div class="chips"><span class="chip">8×8 멀티존</span><span class="chip">FoV 65°</span><span class="chip">최대 4 m</span></div></div>
         <div><div class="sp-label">판단 항목</div>
           <div class="spec-list">
-            <div class="spec-item fx" id="tf1"><span class="spec-dot"></span><div><div class="si-title">거리 측정</div><div class="si-sub">센서와 고령자 사이의 거리를 측정</div></div></div>
+            <div class="spec-item fx" id="tf1"><span class="spec-dot"></span><div><div class="si-title">거리 측정</div><div class="si-sub">센서와 치매 환자 사이의 거리를 측정</div></div></div>
             <div class="spec-item fx" id="tf2"><span class="spec-dot"></span><div><div class="si-title">자세 분류</div><div class="si-sub">Random Forest · 6클래스<br>빈 침대 · 바로 누움 · 좌측 누움 · 우측 누움 · 앉음 · 걸터앉음</div></div></div>
-            <div class="spec-item fx" id="tf3"><span class="spec-dot"></span><div><div class="si-title">침상 이탈 감지</div><div class="si-sub">고령자가 침대에서 벗어난 상황을 감지</div></div></div>
+            <div class="spec-item fx" id="tf3"><span class="spec-dot"></span><div><div class="si-title">침상 이탈 감지</div><div class="si-sub">치매 환자가 침대에서 벗어난 상황을 감지</div></div></div>
           </div></div>
       </div>
     </div>
@@ -289,7 +271,7 @@ body.is-paused #paused{display:block}
         <div><div class="sp-label">판단 항목</div>
           <div class="spec-list">
             <div class="spec-item fx" id="mw1"><span class="spec-dot"></span><div><div class="si-title">위치 추적</div><div class="si-sub">x·y 좌표로 위치와 이동을 실시간 추적</div></div></div>
-            <div class="spec-item fx" id="mw2"><span class="spec-dot"></span><div><div class="si-title">보행 분석</div><div class="si-sub">보행 지표 6종 산출 → 보행 속도·속도 변동·좌우 흔들림·정지 비율·추정 보폭·보폭 변동</div></div></div>
+            <div class="spec-item fx" id="mw2"><span class="spec-dot"></span><div><div class="si-title">보행 지표</div><div class="si-sub">보행 지표 6종 산출 → 보행 속도·속도 변동·좌우 흔들림·정지 비율·보폭 변동·추정 보폭</div></div></div>
             <div class="spec-item fx" id="mw3"><span class="spec-dot"></span><div><div class="si-title">낙상 감지</div><div class="si-sub">신체 높이 1.2 m 이상 급강하 → 즉시 위험</div></div></div>
           </div></div>
       </div>
@@ -300,16 +282,16 @@ body.is-paused #paused{display:block}
 <!-- 8 · 개인 기준 보행 평가 -->
 <div class="slide" data-caps="algo">
   <div class="slide-inner" style="max-width:1120px">
-    <h2 class="s-title">개인 기준 보행 평가</h2>
+    <h2 class="s-title">위험도 판단</h2>
     <div class="spec-card">
-      <div class="gait-summary fx" id="al-metrics">
+      <div class="gait-summary" id="al-metrics">
         <div class="sp-label">mmWave 산출</div>
         <div class="gait-title">보행 지표 6종</div>
         <ul><li>보행 속도</li><li>속도 변동</li><li>좌우 동요</li><li>정지 비율</li><li>추정 보폭</li><li>보폭 변동</li></ul>
       </div>
       <div class="spec-body" style="align-self:center;gap:26px">
         <div class="fx" id="al-how"><div class="sp-label">Z-SCORE · 환자 개인 기준</div>
-          <div class="sp-text">Z = (현재 값 − 개인 평균) ÷ 개인 표준편차</div></div>
+          <div class="sp-text">Z = (현재 값 − 평소 평균) ÷ 평소 표준편차</div></div>
         <div class="fx" id="al-risk"><div class="sp-label">위험도 4단계 · S = Σ|Z|</div>
           <div class="risk-bar">
             <span class="risk-seg" style="background:var(--ok)"></span><span class="risk-seg" style="background:var(--warn)"></span>
@@ -332,52 +314,32 @@ body.is-paused #paused{display:block}
 <div class="slide" data-caps="dashboard">
   <div class="slide-inner" style="max-width:1120px">
     <h2 class="s-title">간호사 대시보드</h2>
-    <div class="spec-card">
-      <img src="assets/dashboard_photo.jpg" alt="간호사 대시보드 화면" class="spec-photo">
+    <div class="spec-card wide">
+      <img src="assets/dashboard_photo.jpg" alt="간호사 대시보드 화면" class="spec-photo wide">
       <div class="spec-body">
-        <div class="fx" id="db-how"><div class="sp-label">화면 구성</div>
+        <div id="db-how"><div class="sp-label">화면 구성</div>
           <div class="sp-text">위치 · 자세 · 위험도를 한 화면에 표시</div></div>
         <div><div class="sp-label">주요 기능</div>
           <div class="spec-list">
-            <div class="spec-item fx" id="db1"><span class="spec-dot"></span><div><div class="si-title">실시간 위치</div><div class="si-sub">병실 평면도 위 환자 좌표</div></div></div>
-            <div class="spec-item fx" id="db2"><span class="spec-dot"></span><div><div class="si-title">위험도 분류 근거</div><div class="si-sub">위험도와 위험 단계를 알린 센서 표시</div></div></div>
-            <div class="spec-item fx" id="db3"><span class="spec-dot"></span><div><div class="si-title">기록 조회</div><div class="si-sub">이벤트 기록 · AI 종합 리포트</div></div></div>
+            <div class="spec-item fx" id="db1"><span class="spec-dot"></span><div><div class="si-title">실시간 위치</div><div class="si-sub">병실 평면도 위 환자 위치</div></div></div>
+            <div class="spec-item fx" id="db2"><span class="spec-dot"></span><div><div class="si-title">위험 단계</div><div class="si-sub">위험 단계 표시</div></div></div>
+            <div class="spec-item fx" id="db3"><span class="spec-dot"></span><div><div class="si-title">기록 조회</div><div class="si-sub">환자 기록 · AI 종합 리포트</div></div></div>
           </div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 10 · AI 종합 리포트 -->
-<div class="slide" data-caps="report">
-  <div class="slide-inner">
-    <h2 class="s-title">AI 종합 리포트 <small>기록과 논문 근거를 읽기 쉬운 설명으로</small></h2>
-    <div class="report-grid">
-      <div class="report-process">
-        <div class="report-step fx ring" id="rp1"><span class="report-no">01</span><div><h3>환자 기록 모으기</h3><p>현재 센서 판정 · 최근 24시간 활동<br>투약 · 위험 요인 · 직전 리포트</p></div></div>
-        <div class="report-step fx ring" id="rp2"><span class="report-no">02</span><div><h3>관련 논문 찾기 <em>RAG</em></h3><p>등록 논문 73편에서 검색<br>의미 검색 + 키워드 검색 결합</p></div></div>
-        <div class="report-step fx ring" id="rp3"><span class="report-no">03</span><div><h3>AI가 리포트 작성 <em>LLM</em></h3><p>모은 기록과 찾은 논문으로<br>15개 항목 리포트 작성</p></div></div>
-      </div>
-      <div class="report-sheet fx ring" id="rp4">
-        <div class="report-sheet-head"><span>리포트 주요 항목</span><small>담당자 검토용</small></div>
-        <div class="report-section"><b>현재 상태와 변화</b><p>자세 · 보행 · 활동 · 이전 기록과 비교</p></div>
-        <div class="report-section"><b>위험도와 위험 요인</b><p>위험도와 환자의 위험 요인 설명</p></div>
-        <div class="report-section"><b>관련 연구 근거</b><p>검색된 논문의 내용과 출처 정리</p></div>
-        <div class="report-section"><b>추가 관찰 사항</b><p>더 살필 변화와 부족한 정보 표시</p></div>
-      </div>
-    </div>
-    <div class="report-role fx" id="rp5"><b>평소 상태와의 변화를 분석해 위험 점수를 계산</b><span>→</span><b>AI가 위험 요인과 관찰 사항을 설명</b></div>
-  </div>
-</div>
-
-<!-- 11 · 시연 영상 — 현장 · 센서 대시보드 2화면 동기화 -->
+<!-- 10 · 시연 영상 — 현장 · 센서 대시보드 · 간호사 폰 3화면 동기화 -->
 <div class="slide video-slide" data-caps="video">
-  <div class="demo-head"><h2>시연 영상</h2><p>현장 영상과 센서 대시보드 동기 재생</p></div>
+  <div class="demo-head"><h2>시연 영상</h2><p>현장 영상 · 센서 대시보드 · 간호사 폰 예시 화면 동기 재생</p></div>
   <div class="demo-grid">
     <figure class="demo-fig"><figcaption>현장 영상</figcaption>
       <div class="demo-frame scene"><video id="demoVideo" muted playsinline preload="auto" src="assets/demo/original.mp4" poster="assets/demo/original-poster.jpg"></video><span class="scene-label" id="sceneLabel">누운 자세</span></div></figure>
     <figure class="demo-fig"><figcaption>센서 대시보드</figcaption>
       <div class="demo-frame monitor"><canvas id="demoCanvas" width="1000" height="645"></canvas></div></figure>
+    <figure class="demo-fig"><figcaption>간호사 폰 알림 예시</figcaption>
+      <div class="demo-frame phone"><video id="demoPhone" muted playsinline preload="auto" src="assets/demo/phone.mp4"></video></div></figure>
   </div>
   <video id="demoMonitor" muted playsinline preload="auto" src="assets/demo/monitor-locked.mp4" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
 </div>
@@ -402,27 +364,26 @@ body.is-paused #paused{display:block}
      video 는 영상 재생 시각(초) at 에 자막이 바뀌고 lb 는 현장 영상 왼쪽 위 장면 이름 */
   var CAPS={
     title:[
-      {t:"비접촉 센서융합 기반 <b>치매환자 낙상예측시스템</b>입니다."},
-      {t:"착용과 촬영 없이 <b>낙상 전 위험 신호</b>를 먼저 확인합니다."}
+      {t:"비접촉 센서융합 기반 <b>치매환자 낙상예측시스템</b>입니다.",d:4},
+      {t:"웨어러블 기기와 카메라 없이 <b>낙상 전 위험 신호</b>를 먼저 확인합니다.",d:4}
     ],
     background:[
-      {t:"국내 요양병원 낙상사고 <b>10건 중 4건</b>은 치매 환자에게서 발생합니다.",hl:["bg1"]},
+      {t:"국내 요양병원 낙상사고 매년 <b>10건 중 4건</b>은 치매 환자에게서 발생합니다.",hl:["bg1"]},
       {t:"고관절이 골절된 고령자 <b>3명 중 1명</b>은 1년 안에 사망합니다.",hl:["bg2"]},
-      {t:"낙상 사망으로 인한 사회적 비용은 <b>연 1조 2500억원</b>에 이릅니다.",hl:["bg3"]},
-      {t:"목표는 착용과 촬영 없이 낙상을 <b>예측</b>하여 낙상을 <b>예방</b>하는 것입니다.",hl:["bg4"]}
+      {t:"낙상 사망으로 인한 사회적 비용은 <b>연 1조 2500억원</b>에 이릅니다.",hl:["bg3"]}
     ],
     compare:[
-      {t:"웨어러블은 치매 어르신의 <b>인지 저하</b>로 <b>지속적인 착용</b>이 어렵습니다.",hl:["o1"]},
-      {t:"제안 기술은 몸에 붙이지 않고 <b>침대 주변에 설치</b>합니다.",hl:["o1","p1","n1","nh"]},
-      {t:"카메라는 고령자의 <b>사생활 침해</b> 우려가 큽니다.",hl:["o2"]},
+      {t:"웨어러블 기기는 치매 환자의 <b>인지 저하</b>로 <b>지속적인 착용</b>이 어렵습니다.",hl:["o1"]},
+      {t:"제안 기술은 몸에 붙이지 않는 센서를 <b>침대 주변에 설치</b>합니다.",hl:["o1","p1","n1","nh"]},
+      {t:"카메라를 통한 인식은 치매 환자의 <b>사생활 침해</b> 우려가 큽니다.",hl:["o2"]},
       {t:"제안 기술은 카메라 없이 <b>거리와 위치 값만</b> 수집합니다.",hl:["o2","p2","n2","nh"]},
-      {t:"압력 매트는 압력 변화로 고령자가 침대에 <b>있는지 없는지만</b>을 감지합니다.",hl:["o3"]},
-      {t:"제안 기술은 ToF와 mmWave를 활용해 고령자의 <b>자세와 위치</b>를 감지합니다.",hl:["o3","p3","n3","nh"]}
+      {t:"압력 매트는 압력 변화로 치매 환자가 침대에 <b>있는지 없는지만</b>을 감지합니다.",hl:["o3"]},
+      {t:"제안 기술은 ToF와 mmWave를 활용해 치매 환자의 <b>자세와 위치</b>를 감지합니다.",hl:["o3","p3","n3","nh"]}
     ],
     system:[
       {t:"침대 주변에 <b>비접촉 센서 2종</b>을 설치합니다.",hl:["s1","s2"]},
       {t:"병실 안의 <b>Raspberry Pi 5</b>가 데이터를 받아 저장하고 분석합니다.",hl:["s3"]},
-      {t:"자세 분류와 보행을 Z-score로 <b>위험도 4단계</b>를 분류합니다.",hl:["s4"]},
+      {t:"자세 분류와 보행을 Z-score 알고리즘을 통해 <b>위험도 4단계</b>로 분류합니다.",hl:["s4"]},
       {t:"간호사는 <b>대시보드</b>에서 위치·자세·위험도를 확인합니다.",hl:["s5"]}
     ],
     layout:[
@@ -435,37 +396,27 @@ body.is-paused #paused{display:block}
       {t:"침대 위 ToF 거리 값이 측정되지 않으면 <b>침상 이탈</b>로 판단합니다.",hl:["tf3"]}
     ],
     mmwave:[
-      {t:"mmWave는 시야각 120°로 병실 내 고령자의 <b>위치와 움직임</b>을 추적합니다.",hl:["mw-spec"]},
-      {t:"고령자의 <b>위치를 좌표로 추적</b>하고 보행 지표 6종을 계산합니다.",hl:["mw1","mw2"]},
+      {t:"mmWave는 레이더로 병실 내 치매 환자의 <b>위치와 움직임</b>을 추적해서",hl:["mw-spec"]},
+      {t:"치매 환자의 보행 지표 <b>6종</b>을 계산합니다.",hl:["mw1","mw2"]},
       {t:"신체 높이가 짧은 시간에 <b>급격히</b> 낮아지는 변화를 감지해 <b>낙상 위험</b>을 판단합니다.",hl:["mw3"]}
     ],
     algo:[
-      {t:"보행은 <b>환자 본인의 평소 값</b>과 비교합니다.",hl:["al-metrics"]},
-      {t:"지표마다 <b>평소 평균과의 차이</b>를 표준편차로 나눠 Z-score를 구합니다.",hl:["al-how"]},
-      {t:"6개 Z-score 절댓값의 합 <b>S</b>로 위험도를 4단계로 나눕니다.",hl:["al-risk"]},
-      {t:"처음 <b>14일간</b> 데이터를 수집하여 개인별 평소 상태의 기준을 설정합니다.",hl:["al-note"]}
+      {t:"처음 <b>14일간</b> 데이터를 수집하여 치매 환자의 평소 상태를 측정합니다.",hl:["al-note"]},
+      {t:"보행 지표마다 평소 치매 환자의 상태와 얼마나 <b>달라졌는지</b> 점수로 계산합니다.",hl:["al-how"]},
+      {t:"각 지표 점수를 더해 지금 <b>4단계 중</b> 어느 위험 단계인지 판단합니다.",hl:["al-risk"]},
     ],
     dashboard:[
-      {t:"대시보드는 <b>위치·자세·위험도</b>를 한 화면에 보여줍니다.",hl:["db-how"]},
-      {t:"병실 평면도 위에 <b>고령자 위치</b>를 실시간으로 표시합니다.",hl:["db1"]},
-      {t:"위험도와 <b>위험 신호를 알린 센서</b>를 보여줍니다.",hl:["db2"]},
-      {t:"지난 이벤트 기록과 <b>AI 종합 리포트</b>를 열어볼 수 있습니다.",hl:["db3"]}
-    ],
-    report:[
-      {t:"위험도와 최근 24시간 활동 등 <b>환자의 기록을 모읍니다.</b>",hl:["rp1"]},
-      {t:"등록된 논문 73편에서 <b>환자의 현재 상황과 관련된 논문</b>을 찾습니다.",hl:["rp2"]},
-      {t:"AI가 기록과 논문을 바탕으로 <b>15개 항목 리포트</b>를 작성합니다.",hl:["rp3"]},
-      {t:"리포트에는 <b>현재 환자 상태·위험도 관련 근거·연구 근거·추가 관찰</b>이 작성됩니다.",hl:["rp4"]},
-      {t:"위험 점수는 현재 상태가 평소와 얼마나 다른지를 바탕으로 산출합니다. AI는 <b>위험 요인과 관찰 사항</b>을 설명합니다.",hl:["rp5"]},
+      {t:"병실 평면도 위에 <b>치매 환자 위치</b>를 실시간으로 표시합니다.",hl:["db1"]},
+      {t:"치매 환자의 현재 <b>위험도와 위험 단계</b>를 표시합니다.",hl:["db2"]},
+      {t:"지난 환자 기록과 <b>AI 종합 리포트</b>를 열어볼 수 있습니다.",hl:["db3"]},
       {t:"이어서 <b>시연 영상</b>입니다."}
     ],
     video:[
-      {t:"누워 있는 장면입니다. ToF가 <b>누운 자세</b>로 분류합니다.",at:0,lb:"누운 자세"},
-      {t:"좌우로 몸을 뒤척이면 ToF가 <b>뒤척임</b>으로 인식합니다.",at:6,lb:"뒤척임"},
-      {t:"상체를 일으키면 <b>자세 변화</b>가 바로 반영됩니다.",at:11,lb:"상체 기립"},
-      {t:"침대 끝에 걸터앉습니다. <b>이탈 직전 자세</b>로 분류됩니다.",at:16,lb:"걸터앉음"},
-      {t:"침대를 벗어나면 <b>mmWave가 위치</b>를 이어서 추적합니다.",at:22,lb:"침상 이탈"},
-      {t:"누운 순간부터 걷는 순간까지 <b>두 센서가 이어서 관찰</b>합니다.",at:27,lb:"보행 시작"}
+      {t:"ToF가 치매 환자의 <b>누워 있는 자세</b>를 인식합니다.",at:0,lb:"누운 자세"},
+      {t:"치매 환자가 좌우로 몸을 뒤척이면 ToF를 통해 <b>뒤척이는 상태</b>로 인식합니다.",at:6,lb:"뒤척임"},
+      {t:"상체를 일으키면 <b>자세 변화</b>가 대시보드에 실시간으로 반영됩니다. 폰 예시 화면에는 <b>경고 표시와 알림</b>이 옵니다.",at:11,lb:"상체 기립"},
+      {t:"침대 끝에 걸터앉습니다. <b>이탈 직전 자세</b>로 분류되고 폰 예시 화면에 <b>위험</b>이 표시됩니다.",at:16,lb:"걸터앉음"},
+      {t:"침대를 벗어나면 <b>mmWave 센서</b>가 치매 환자의 이동을 감지하고 추적합니다.",at:22,lb:"침상 이탈"}
     ]
   };
   function capDur(c){
@@ -479,10 +430,10 @@ body.is-paused #paused{display:block}
   var capEl=document.getElementById('cap'), prog=document.getElementById('progress');
   var brand=document.getElementById('brand'), dotsEl=document.getElementById('dots');
   var vid=document.getElementById('demoVideo');           // 현장 영상 = 기준 시계
-  var mon=document.getElementById('demoMonitor');
+  var mon=document.getElementById('demoMonitor'), phone=document.getElementById('demoPhone');
   var canvas=document.getElementById('demoCanvas'), ctx=canvas.getContext('2d');
   var sceneLabel=document.getElementById('sceneLabel');
-  var DEMO=[vid,mon];
+  var DEMO=[vid,mon,phone];
 
   /* 모니터 보정 영상에서 대시보드 부분만 잘라 캔버스에 (1280×720 기준 좌표) */
   function drawMonitor(frame){
@@ -492,8 +443,7 @@ body.is-paused #paused{display:block}
     ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(frame,c[0],c[1],c[2],c[3],(canvas.width-w)/2,(canvas.height-h)/2,w,h);
   }
-  var poster=new Image(); poster.onload=function(){ if(mon.readyState<2) drawMonitor(poster); }; poster.src='assets/demo/monitor-preview.jpg';
-  function demoPlay(){ DEMO.forEach(function(v){ v.playbackRate=1; v.play().catch(function(){}); }); }
+  var poster=new Image(); poster.onload=function(){ if(mon.readyState<2) drawMonitor(poster); }; poster.src='assets/demo/monitor-preview.jpg';  function demoPlay(){ DEMO.forEach(function(v){ v.playbackRate=1; v.play().catch(function(){}); }); }
   function demoPause(){ DEMO.forEach(function(v){ v.pause(); }); }
   function demoSeek(t){ DEMO.forEach(function(v){ try{ v.currentTime=t; }catch(e){} }); }
   /* 모니터 영상을 현장 영상 시각에 맞춰 살짝 빠르게/느리게 — 크게 어긋나면 바로 점프 */
@@ -588,7 +538,7 @@ body.is-paused #paused{display:block}
       if(isVideo(cur)){
         t=vid.currentTime||0;
         if(mon.readyState>=2) drawMonitor(mon);
-        if(!paused) follow(mon);
+        if(!paused){ follow(mon); follow(phone); }
         var d=(vid.duration&&isFinite(vid.duration))?vid.duration:slideDur;
         var list=capsOf(cur), k=0;
         for(var i=0;i<list.length;i++) if(t>=list[i].at) k=i;
